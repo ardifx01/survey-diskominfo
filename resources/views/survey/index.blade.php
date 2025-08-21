@@ -1,9 +1,4 @@
-<?php
-// ==============================================
-// resources/views/survey/index.blade.php
-// ==============================================
-?>
-
+{{--  resources/views/survey/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Survei Kepuasan Layanan Diskominfo Lamongan')
@@ -307,11 +302,7 @@
 <form id="surveyForm">
     @csrf
     <!-- Question 1: Nama -->
-    <div class="question-container active" id="question1">
-        <div class="illustration">
-            <div class="illustration-placeholder">👤</div>
-        </div>
-        
+    <div class="question-container active" id="question1"> 
         <div class="question-header">
             <h3 class="question-title">Identitas Peserta</h3>
             <p class="question-subtitle">Silakan isi data diri Anda untuk memulai survei kepuasan layanan</p>
@@ -332,7 +323,7 @@
     <!-- Question 2: Jenis Kelamin -->
     <div class="question-container" id="question2">
         <div class="illustration">
-            <div class="illustration-placeholder">⚥</div>
+            <div class="illustration-placeholder">GENDER</div>
         </div>
         
         <div class="question-header">
@@ -364,7 +355,7 @@
     <!-- Question 3: Usia -->
     <div class="question-container" id="question3">
         <div class="illustration">
-            <div class="illustration-placeholder">🎂</div>
+            <div class="illustration-placeholder">AGE</div>
         </div>
         
         <div class="question-header">
@@ -385,7 +376,7 @@
     </div>
 
     <div class="success-message" id="successMessage">
-        <div class="success-icon">✅</div>
+        <div class="success-icon">SUCCESS</div>
         <h3>Terima Kasih!</h3>
         <p>Data pribadi Anda telah berhasil disimpan. Survei kepuasan layanan akan dilanjutkan dengan pertanyaan evaluasi layanan Dinas Komunikasi dan Informatika Kabupaten Lamongan.</p>
     </div>

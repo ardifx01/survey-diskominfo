@@ -21,11 +21,10 @@
         }
 
         .container {
-            max-width: 900px;
-            margin: 0 auto;
+            width: 100%;
+            margin: 0;
             background: white;
             min-height: 100vh;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
         }
 
         .header {
@@ -161,7 +160,7 @@
             <div class="header-content">
                 <div class="logos">
                     <div class="logo-item">
-                        <div class="logo-placeholder">🏛️</div>
+                        <div class="logo-placeholder">LOGO</div>
                         <div>
                             <div style="font-size: 12px; opacity: 0.9;">JAWA TIMUR</div>
                             <div style="font-weight: 600;">GERBANG BARU</div>

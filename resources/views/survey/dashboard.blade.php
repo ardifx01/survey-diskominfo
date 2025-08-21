@@ -1,9 +1,4 @@
-<?php
-// ==============================================
-// resources/views/survey/dashboard.blade.php
-// ==============================================
-?>
-
+{{-- resources/views/survey/dashboard.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Dashboard Survei Kepuasan')
@@ -259,7 +254,7 @@
         <p class="dashboard-subtitle">Statistik dan data survei kepuasan layanan Diskominfo Lamongan</p>
         
         <a href="{{ route('survey.export') }}" class="export-btn">
-            📊 Export Data CSV
+            EXPORT Export Data CSV
         </a>
     </div>
 
@@ -330,7 +325,7 @@
     <!-- Recent Surveys Table -->
     <div class="recent-table">
         <div class="table-header">
-            📋 Responden Terbaru
+            LIST Responden Terbaru
         </div>
         <div class="table-content">
             <table class="table">
