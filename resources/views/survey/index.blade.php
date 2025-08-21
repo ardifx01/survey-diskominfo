@@ -1,4 +1,9 @@
-{{--  resources/views/survey/index.blade.php --}}
+<?php
+// ==============================================
+// resources/views/survey/index.blade.php
+// ==============================================
+?>
+
 @extends('layouts.app')
 
 @section('title', 'Survei Kepuasan Layanan Diskominfo Lamongan')
@@ -181,6 +186,10 @@
     .btn-container {
         text-align: center;
         margin-top: 40px;
+        display: flex;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
     }
 
     .btn-next {
@@ -194,6 +203,25 @@
         cursor: pointer;
         transition: all 0.3s ease;
         min-width: 200px;
+    }
+
+    .btn-back {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 18px 40px;
+        font-size: 16px;
+        font-weight: 600;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        min-width: 200px;
+    }
+
+    .btn-back:hover {
+        background-color: #5a6268;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
     }
 
     .btn-next:hover {
@@ -280,6 +308,15 @@
             height: 35px;
             font-size: 14px;
         }
+
+        .btn-container {
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .btn-next, .btn-back {
+            min-width: 100%;
+        }
     }
 </style>
 @endpush
@@ -302,7 +339,11 @@
 <form id="surveyForm">
     @csrf
     <!-- Question 1: Nama -->
-    <div class="question-container active" id="question1"> 
+    <div class="question-container active" id="question1">
+        {{-- <div class="illustration">
+            <div class="illustration-placeholder">USER</div>
+        </div> --}}
+        
         <div class="question-header">
             <h3 class="question-title">Identitas Peserta</h3>
             <p class="question-subtitle">Silakan isi data diri Anda untuk memulai survei kepuasan layanan</p>
@@ -322,9 +363,9 @@
 
     <!-- Question 2: Jenis Kelamin -->
     <div class="question-container" id="question2">
-        <div class="illustration">
+        {{-- <div class="illustration">
             <div class="illustration-placeholder">GENDER</div>
-        </div>
+        </div> --}}
         
         <div class="question-header">
             <h3 class="question-title">Data Demografi</h3>
@@ -346,6 +387,9 @@
         </div>
         
         <div class="btn-container">
+            <button type="button" class="btn-back" onclick="prevQuestion(2)">
+                Kembali
+            </button>
             <button type="button" class="btn-next" onclick="nextQuestion(2)" disabled id="btn2">
                 Lanjut ke Pertanyaan Berikutnya
             </button>
@@ -354,9 +398,9 @@
 
     <!-- Question 3: Usia -->
     <div class="question-container" id="question3">
-        <div class="illustration">
+        {{-- <div class="illustration">
             <div class="illustration-placeholder">AGE</div>
-        </div>
+        </div> --}}
         
         <div class="question-header">
             <h3 class="question-title">Informasi Usia</h3>
@@ -365,10 +409,13 @@
         
         <div class="form-group">
             <label class="form-label" for="usia">Usia (Tahun) *</label>
-            <input type="number" id="usia" name="usia" class="form-input" placeholder="Masukkan usia Anda" min="15" max="100" required>
+            <input type="number" id="usia" name="usia" class="form-input" placeholder="Masukkan usia Anda" min="6" max="100" required>
         </div>
         
         <div class="btn-container">
+            <button type="button" class="btn-back" onclick="prevQuestion(3)">
+                Kembali
+            </button>
             <button type="button" class="btn-next" onclick="submitSurvey()" disabled id="btn3">
                 Selesaikan Data Pribadi
             </button>
@@ -388,13 +435,6 @@
     let currentQuestion = 1;
     const totalQuestions = 3;
 
-    // Setup CSRF token for AJAX requests
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-
     // Form validation and navigation
     document.getElementById('nama').addEventListener('input', function() {
         const btn = document.getElementById('btn1');
@@ -410,7 +450,7 @@
 
     document.getElementById('usia').addEventListener('input', function() {
         const btn = document.getElementById('btn3');
-        const isValid = this.value >= 15 && this.value <= 100 && this.value !== '';
+        const isValid = this.value >= 6 && this.value <= 100 && this.value !== '';
         btn.disabled = !isValid;
     });
 
@@ -454,10 +494,40 @@
         }
     }
 
+    function prevQuestion(current) {
+        // Hide current question
+        document.getElementById('question' + current).classList.remove('active');
+        
+        // Show previous question
+        const prevQ = current - 1;
+        if (prevQ >= 1) {
+            setTimeout(() => {
+                document.getElementById('question' + prevQ).classList.add('active');
+                currentQuestion = prevQ;
+                updateProgress();
+                updateSteps();
+            }, 300);
+        }
+    }
+
     function submitSurvey() {
         const usia = document.getElementById('usia').value;
-        if (!usia || usia < 15 || usia > 100) {
-            showError('Mohon isi usia dengan benar (15-100 tahun)');
+        if (!usia || usia < 6 || usia > 100) {
+            showError('Minimal usia 6 tahun');
+            return;
+        }
+
+        // Validate all fields
+        const nama = document.getElementById('nama').value.trim();
+        const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
+        
+        if (!nama) {
+            showError('Mohon isi nama lengkap Anda');
+            return;
+        }
+        
+        if (!jenisKelamin) {
+            showError('Mohon pilih jenis kelamin');
             return;
         }
 
@@ -466,24 +536,27 @@
         btn.disabled = true;
         btn.textContent = 'Menyimpan...';
 
-        // Prepare form data
-        const formData = {
-            nama: document.getElementById('nama').value.trim(),
-            jenis_kelamin: document.querySelector('input[name="jenis_kelamin"]:checked').value,
-            usia: parseInt(document.getElementById('usia').value),
-            _token: document.querySelector('input[name="_token"]').value
-        };
+        // Prepare form data as FormData for better compatibility
+        const formData = new FormData();
+        formData.append('nama', nama);
+        formData.append('jenis_kelamin', jenisKelamin.value);
+        formData.append('usia', parseInt(document.getElementById('usia').value));
+        formData.append('_token', document.querySelector('input[name="_token"]').value);
 
         // Submit to Laravel backend
         fetch('{{ route("survey.store") }}', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
             },
-            body: JSON.stringify(formData)
+            body: formData
         })
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
             if (data.success) {
                 // Hide current question

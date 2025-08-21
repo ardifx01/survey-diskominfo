@@ -24,7 +24,7 @@ class SurveyRequest extends FormRequest
         return [
             'nama' => 'required|string|min:3|max:255',
             'jenis_kelamin' => 'required|in:perempuan,laki_laki',
-            'usia' => 'required|integer|min:15|max:100',
+            'usia' => 'required|integer|min:6|max:100',
         ];
     }
 
@@ -38,7 +38,7 @@ class SurveyRequest extends FormRequest
             'jenis_kelamin.in' => 'Jenis kelamin tidak valid.',
             'usia.required' => 'Usia wajib diisi.',
             'usia.integer' => 'Usia harus berupa angka.',
-            'usia.min' => 'Usia minimal 15 tahun.',
+            'usia.min' => 'Usia minimal 6 tahun.',
             'usia.max' => 'Usia maksimal 100 tahun.',
         ];
     }
