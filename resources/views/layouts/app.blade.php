@@ -177,8 +177,7 @@
             
             <div class="title-section">
                 <h1>Selamat Datang</h1>
-                <h2>Survei Kepuasan Masyarakat</h2>
-                <h3>Pada</h3>
+                <h2>Survei Kepuasan Masyarakat Pada</h2>
                 <h3>Dinas Komunikasi dan Informatika</h3>
                 <h4>KABUPATEN LAMONGAN</h4>
             </div>

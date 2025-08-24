@@ -13,13 +13,16 @@
     .progress-container {
         background: white;
         border-bottom: 1px solid #e9ecef;
+        position: relative;
+        padding: 20px 0;
     }
 
     .progress-bar {
         height: 4px;
         background: #e9ecef;
         position: relative;
-        overflow: hidden;
+        overflow: visible;
+        margin: 0 60px;
     }
 
     .progress-fill {
@@ -27,6 +30,86 @@
         background: #5a9b9e;
         width: 33.33%;
         transition: width 0.5s ease;
+    }
+
+    .progress-logo-container {
+        position: absolute;
+        top: -25px;
+        left: 33.33%;
+        transform: translateX(-50%);
+        transition: left 0.5s ease;
+        z-index: 10;
+    }
+
+    .progress-speech-bubble {
+        position: absolute;
+        bottom: 45px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: #2c3e50;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 15px;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        opacity: 0;
+        animation: bounceIn 0.6s ease forwards;
+    }
+
+    .progress-speech-bubble::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 0;
+        height: 0;
+        border-left: 6px solid transparent;
+        border-right: 6px solid transparent;
+        border-top: 6px solid #2c3e50;
+    }
+
+    .progress-logo {
+        width: 50px;
+        height: 50px;
+        background: white;
+        border: 3px solid #5a9b9e;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        position: relative;
+    }
+
+    .logo-placeholder {
+        width: 40px;
+        height: 40px;
+        background: #f8f9fa;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: #5a9b9e;
+        font-weight: 600;
+        /* Tempat untuk logo Anda - ganti background dan tambahkan gambar/icon */
+    }
+
+    @keyframes bounceIn {
+        0% {
+            opacity: 0;
+            transform: translateX(-50%) scale(0.3);
+        }
+        50% {
+            opacity: 1;
+            transform: translateX(-50%) scale(1.1);
+        }
+        100% {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
     }
 
     .step-indicator {
@@ -61,24 +144,7 @@
         color: white;
     }
 
-    .step::after {
-        content: '';
-        position: absolute;
-        right: -20px;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 25px;
-        height: 2px;
-        background: #e9ecef;
-    }
-
-    .step:last-child::after {
-        display: none;
-    }
-
-    .step.completed::after {
-        background: #28a745;
-    }
+    
 
     .question-container {
         display: none;
@@ -317,6 +383,27 @@
         .btn-next, .btn-back {
             min-width: 100%;
         }
+
+        .progress-bar {
+            margin: 0 30px;
+        }
+
+        .progress-logo {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-placeholder {
+            width: 30px;
+            height: 30px;
+            font-size: 10px;
+        }
+
+        .progress-speech-bubble {
+            font-size: 12px;
+            padding: 6px 10px;
+            bottom: 35px;
+        }
     }
 </style>
 @endpush
@@ -325,6 +412,14 @@
 <div class="progress-container">
     <div class="progress-bar">
         <div class="progress-fill" id="progressBar"></div>
+        <div class="progress-logo-container" id="progressLogoContainer">
+            <div class="progress-speech-bubble" id="progressBubble">33%</div>
+            <div class="progress-logo">
+                <div class="logo-placeholder" id="logoPlaceholder">
+                    <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Diskominfo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                </div>
+            </div>
+        </div>
     </div>
     
     <div class="step-indicator">
@@ -589,8 +684,22 @@
 
     function updateProgress(customPercentage = null) {
         const progressBar = document.getElementById('progressBar');
+        const progressLogoContainer = document.getElementById('progressLogoContainer');
+        const progressBubble = document.getElementById('progressBubble');
+        
         const percentage = customPercentage || (currentQuestion / totalQuestions) * 100;
         progressBar.style.width = percentage + '%';
+        
+        // Update posisi logo mengikuti progress
+        progressLogoContainer.style.left = percentage + '%';
+        
+        // Update text di speech bubble
+        progressBubble.textContent = Math.round(percentage) + '%';
+        
+        // Trigger animasi bubble
+        progressBubble.style.animation = 'none';
+        progressBubble.offsetHeight; // Trigger reflow
+        progressBubble.style.animation = 'bounceIn 0.6s ease forwards';
     }
 
     function updateSteps() {
