@@ -399,8 +399,6 @@
                             <th>Nama</th>
                             <th>Jenis Kelamin</th>
                             <th>Usia</th>
-                            <th>IP Address</th>
-                            <th>User Agent</th>
                             <th>Tanggal</th>
                             <th>Aksi</th>
                         </tr>
@@ -416,10 +414,6 @@
                                 </span>
                             </td>
                             <td>{{ $survey->usia }} tahun</td>
-                            <td style="font-family: monospace; font-size: 12px;">{{ $survey->ip_address ?? '-' }}</td>
-                            <td style="font-size: 11px; max-width: 200px; word-break: break-all;">
-                                {{ Str::limit($survey->user_agent ?? '-', 50) }}
-                            </td>
                             <td style="font-size: 12px;">{{ $survey->created_at->format('d/m/Y H:i') }}</td>
                             <td>
                                 <a href="#" onclick="if(confirm('Yakin ingin menghapus data {{ $survey->nama }}?')) { document.getElementById('delete-{{ $survey->id }}').submit(); }" class="btn-delete">Hapus</a>
