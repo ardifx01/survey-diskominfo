@@ -253,19 +253,21 @@
             }
             
             .logos {
-                flex-direction: column;
-                gap: 15px;
+                flex-wrap: nowrap;
+                gap: 10px;
+                justify-content: center;
+                overflow-x: auto;
+                padding: 0 10px;
             }
 
             .logo-item {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
+                flex-shrink: 0;
+                min-width: 40px;
             }
 
             .logo-image {
-                width: 50px;
-                height: 50px;
+                width: 40px;
+                height: 40px;
             }
             
             .program-badges {
@@ -312,50 +314,46 @@
         <div class="header">
             <div class="header-content">
                 <div class="logos">
-                    <!-- Logo Jawa Timur -->
+                    <!-- Logo 1 - Jawa Timur -->
                     <div class="logo-item">
                         <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Jawa Timur">
-                        </div>
-                        <div class="logo-text">
-                            <div class="main-text">PROVINSI JAWA TIMUR</div>
-                            <div class="sub-text">GERBANG KERTOSUSILO</div>
+                            <img src="{{ asset('images/logos/logo-jatim.png') }}" alt="Logo Jawa Timur">
                         </div>
                     </div>
 
-                    <!-- Logo Lamongan -->
+                    <!-- Logo 2 - Kabupaten Lamongan -->
                     <div class="logo-item">
                         <div class="logo-image">
                             <img src="{{ asset('images/logos/logo-lamongan.png') }}" alt="Logo Kabupaten Lamongan">
                         </div>
-                        <div class="logo-text">
-                            <div class="main-text">KABUPATEN LAMONGAN</div>
-                            <div class="sub-text">LAMONGAN BERKARAKTER</div>
-                        </div>
                     </div>
 
-                    <!-- Logo Diskominfo -->
+                    <!-- Logo 3 - Diskominfo -->
                     <div class="logo-item">
                         <div class="logo-image">
                             <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Diskominfo">
                         </div>
-                        <div class="logo-text">
-                            <div class="main-text">DISKOMINFO</div>
-                            <div class="sub-text">LAMONGAN</div>
+                    </div>
+
+                    <!-- Logo 4 - Kemendagri -->
+                    <div class="logo-item">
+                        <div class="logo-image">
+                            <img src="{{ asset('images/logos/logo-kemendagri.png') }}" alt="Logo Kemendagri">
                         </div>
                     </div>
-                </div>
-                
-                <div class="program-badges">
-                    <div class="badge">BerAKHLAK</div>
-                    <div class="badge"># bangga melayani bangsa</div>
+
+                    <!-- Logo 5 - Indonesia -->
+                    <div class="logo-item">
+                        <div class="logo-image">
+                            <img src="{{ asset('images/logos/logo-indonesia.png') }}" alt="Logo Indonesia">
+                        </div>
+                    </div>
                 </div>
             </div>
             
             <div class="title-section">
                 <h1>Selamat Datang</h1>
-                <h2>Survei Kepuasan Masyarakat</h2>
-                <h3>Pada</h3>
+                <h2>Survei Kepuasan Masyarakat pada</h2>
                 <h3>Dinas Komunikasi dan Informatika</h3>
                 <h4>KABUPATEN LAMONGAN</h4>
             </div>
@@ -376,7 +374,7 @@
                         
                         <div class="footer-contact">
                             <div class="icon">📍</div>
-                            <span>Jl. Veteran No.1, Lamongan, Jawa Timur</span>
+                            <span>Jl. Basuki Rahmad No. 1, Kecamatan Lamongan,</span>
                         </div>
                         
                         <div class="footer-contact">
@@ -389,36 +387,10 @@
                             <span>diskominfo@lamongankab.go.id</span>
                         </div>
                     </div>
-
-                    <!-- Layanan -->
-                    <div class="footer-section">
-                        <h4>Layanan Kami</h4>
-                        <ul>
-                            <li>Sistem Informasi</li>
-                            <li>Komunikasi Publik</li>
-                            <li>Statistik Daerah</li>
-                            <li>Website Resmi</li>
-                            <li>Media Center</li>
-                            <li>Helpdesk IT</li>
-                        </ul>
-                    </div>
-
-                    <!-- Program -->
-                    <div class="footer-section">
-                        <h4>Program Unggulan</h4>
-                        <ul>
-                            <li>Smart City Lamongan</li>
-                            <li>Digital Government</li>
-                            <li>Literasi Digital</li>
-                            <li>One Data</li>
-                            <li>Cyber Security</li>
-                            <li>E-Government</li>
-                        </ul>
-                    </div>
                 </div>
 
                 <div class="footer-bottom">
-                    <p>&copy; {{ date('Y') }} Dinas Komunikasi dan Informatika Kabupaten Lamongan</p>
+                    <p>&copy; 2025 Dinas Komunikasi dan Informatika Kabupaten Lamongan</p>
                     <p>Survei Kepuasan Masyarakat - Sistem Informasi Pelayanan Publik</p>
                     
                     <div class="footer-links">
