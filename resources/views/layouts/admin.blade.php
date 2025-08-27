@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Panel - Survei Kepuasan Diskominfo Lamongan')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -24,6 +25,50 @@
             min-height: 100vh;
         }
 
+        /* Mobile Menu Toggle Button */
+        .mobile-menu-toggle {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #2c3e50;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-toggle:hover {
+            background: #34495e;
+        }
+
+        .mobile-menu-toggle.active {
+            background: #5a9b9e;
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+        }
+
         /* Sidebar */
         .sidebar {
             width: 250px;
@@ -32,12 +77,36 @@
             position: fixed;
             height: 100vh;
             overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1000;
         }
 
         .sidebar-header {
             padding: 20px;
             background: rgba(0, 0, 0, 0.1);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        /* Close button inside sidebar for mobile */
+        .sidebar-close-btn {
+            display: none;
+            position: absolute;
+            top: 50%;
+            right: 20px;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-close-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .sidebar-title {
@@ -67,6 +136,8 @@
         .menu-item:hover {
             background: rgba(255, 255, 255, 0.1);
             border-left-color: #5a9b9e;
+            color: white;
+            text-decoration: none;
         }
 
         .menu-item.active {
@@ -100,6 +171,8 @@
 
         .logout-btn:hover {
             background: rgba(231, 76, 60, 0.3);
+            color: white;
+            text-decoration: none;
         }
 
         /* Main Content */
@@ -107,6 +180,7 @@
             flex: 1;
             margin-left: 250px;
             background: #f8f9fa;
+            transition: margin-left 0.3s ease;
         }
 
         .content-header {
@@ -114,6 +188,9 @@
             padding: 20px 30px;
             border-bottom: 1px solid #e9ecef;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .page-title {
@@ -172,13 +249,28 @@
 
         /* Mobile Responsive */
         @media (max-width: 768px) {
+            .mobile-menu-toggle {
+                display: block;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+
             .sidebar {
                 transform: translateX(-100%);
-                transition: transform 0.3s ease;
             }
 
             .sidebar.open {
                 transform: translateX(0);
+            }
+
+            .sidebar-close-btn {
+                display: block;
+            }
+
+            .sidebar-header {
+                padding-right: 60px;
             }
 
             .main-content {
@@ -186,6 +278,8 @@
             }
 
             .content-header {
+                padding: 20px;
+                padding-left: 80px;
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
@@ -194,42 +288,23 @@
             .content-body {
                 padding: 20px 15px;
             }
+        }
 
-            /* Mobile menu toggle */
-            .mobile-menu-toggle {
-                display: block;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1000;
-                background: #2c3e50;
-                color: white;
-                border: none;
-                padding: 10px;
-                border-radius: 4px;
-                cursor: pointer;
+        @media (max-width: 480px) {
+            .content-header {
+                padding: 15px;
             }
-        }
 
-        .mobile-menu-toggle {
-            display: none;
-        }
+            .content-body {
+                padding: 15px 10px;
+            }
 
-        /* Mobile Overlay */
-        .mobile-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
-        }
+            .page-title {
+                font-size: 20px;
+            }
 
-        @media (max-width: 768px) {
-            .mobile-overlay.active {
-                display: block;
+            .page-subtitle {
+                font-size: 13px;
             }
         }
     </style>
@@ -238,34 +313,37 @@
 <body>
     <div class="admin-layout">
         <!-- Mobile Menu Toggle -->
-        <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
-            <span class="menu-icon">☰</span>
+        <button class="mobile-menu-toggle" id="mobileMenuToggle" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars" id="hamburgerIcon"></i>
         </button>
 
         <!-- Mobile Overlay -->
-        <div class="mobile-overlay" onclick="closeMobileMenu()"></div>
+        <div class="mobile-overlay" id="mobileOverlay" onclick="closeMobileMenu()"></div>
 
         <!-- Sidebar -->
         <div class="sidebar" id="sidebar">
             <div class="sidebar-header">
+                <button class="sidebar-close-btn" onclick="closeMobileMenu()">
+                    <i class="fas fa-times"></i>
+                </button>
                 <div class="sidebar-title">Admin Panel</div>
                 <div class="sidebar-subtitle">Survei Kepuasan Diskominfo</div>
             </div>
 
             <div class="sidebar-menu">
                 <a href="{{ route('admin.dashboard') }}" class="menu-item @yield('active-dashboard')">
-                    <span class="menu-icon">📊</span>
+                    <span class="menu-icon"><i class="fas fa-tachometer-alt"></i></span>
                     Dashboard
                 </a>
                 <a href="{{ route('admin.questions.index') }}" class="menu-item @yield('active-questions')">
-                    <span class="menu-icon">❓</span>
+                    <span class="menu-icon"><i class="fas fa-clipboard-list"></i></span>
                     Pertanyaan
                 </a>
             </div>
 
             <div class="logout-section">
                 <a href="{{ route('admin.logout') }}" class="logout-btn">
-                    Logout
+                    <i class="fas fa-sign-out-alt"></i> Logout
                 </a>
             </div>
         </div>
@@ -313,22 +391,38 @@
     <script>
         function toggleMobileMenu() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.querySelector('.mobile-overlay');
+            const overlay = document.getElementById('mobileOverlay');
             
-            sidebar.classList.toggle('open');
-            overlay.classList.toggle('active');
+            const isOpen = sidebar.classList.contains('open');
+            
+            if (isOpen) {
+                closeMobileMenu();
+            } else {
+                sidebar.classList.add('open');
+                overlay.classList.add('active');
+            }
         }
 
         function closeMobileMenu() {
             const sidebar = document.getElementById('sidebar');
-            const overlay = document.querySelector('.mobile-overlay');
+            const overlay = document.getElementById('mobileOverlay');
             
             sidebar.classList.remove('open');
             overlay.classList.remove('active');
         }
 
-        // Auto hide success/error messages
+        // Close menu when clicking on menu items (mobile)
         document.addEventListener('DOMContentLoaded', function() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 768) {
+                        setTimeout(closeMobileMenu, 200);
+                    }
+                });
+            });
+
+            // Auto hide success/error messages
             const successMessage = document.querySelector('.success-message');
             const errorMessage = document.querySelector('.error-message');
             
@@ -343,6 +437,13 @@
                     errorMessage.style.display = 'none';
                 }, 5000);
             }
+
+            // Handle window resize
+            window.addEventListener('resize', function() {
+                if (window.innerWidth > 768) {
+                    closeMobileMenu();
+                }
+            });
         });
     </script>
     @stack('scripts')
