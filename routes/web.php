@@ -7,18 +7,21 @@ use App\Http\Controllers\SurveyQuestionController;
 use App\Http\Controllers\DynamicSurveyController;
 use Illuminate\Support\Facades\Route;
 
+// Public Survey Routes
 Route::get('/', [SurveyController::class, 'index'])->name('survey.index');
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 Route::get('/dashboard', [SurveyController::class, 'dashboard'])->name('survey.dashboard');
 Route::get('/export', [SurveyController::class, 'export'])->name('survey.export');
 
-// Admin routes - tanpa prefix agar bisa diakses langsung
+// Admin Authentication Routes
 Route::get('/admin', [AdminController::class, 'login'])->name('admin.login');
 Route::post('/admin/auth', [AdminController::class, 'authenticate'])->name('admin.authenticate');
+Route::get('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
+
+// Admin Dashboard & Management Routes
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 Route::delete('/admin/survey/{id}', [AdminController::class, 'deleteSurvey'])->name('admin.deleteSurvey');
-Route::get('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
 // Admin Question Management Routes
 Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
@@ -42,7 +45,9 @@ Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
     Route::post('/section/{sectionId}/questions/reorder', [SurveyQuestionController::class, 'updateQuestionOrder'])->name('reorder-questions');
 });
 
-// Dynamic Survey Routes
+Route::get('/survey/download/{responseId}', [SurveyController::class, 'downloadFile'])->name('survey.download');
+
+// Dynamic Survey Routes (Optional - for future use if needed)
 Route::get('/dynamic-survey', [DynamicSurveyController::class, 'index'])->name('dynamic-survey.index');
 Route::post('/dynamic-survey', [DynamicSurveyController::class, 'store'])->name('dynamic-survey.store');
 Route::get('/dynamic-survey/preview', [DynamicSurveyController::class, 'preview'])->name('dynamic-survey.preview');

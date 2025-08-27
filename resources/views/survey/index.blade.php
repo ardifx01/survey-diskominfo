@@ -1,14 +1,10 @@
-<?php
-// ==============================================
-// resources/views/survey/index.blade.php
-// ==============================================
-?>
-
+{{-- resources/views/survey/index.blade.php --}}
 @extends('layouts.app')
 
 @section('title', 'Survei Kepuasan Layanan Diskominfo Lamongan')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
     .progress-container {
         background: white;
@@ -28,14 +24,14 @@
     .progress-fill {
         height: 100%;
         background: #5a9b9e;
-        width: 33.33%;
+        width: 0%;
         transition: width 0.5s ease;
     }
 
     .progress-logo-container {
         position: absolute;
         top: -25px;
-        left: 33.33%;
+        left: 0%;
         transform: translateX(-50%);
         transition: left 0.5s ease;
         z-index: 10;
@@ -94,7 +90,6 @@
         font-size: 12px;
         color: #5a9b9e;
         font-weight: 600;
-        /* Tempat untuk logo Anda - ganti background dan tambahkan gambar/icon */
     }
 
     @keyframes bounceIn {
@@ -112,93 +107,75 @@
         }
     }
 
-    .step-indicator {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding: 20px;
-        gap: 15px;
-    }
-
-    .step {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background: #e9ecef;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-weight: 600;
-        color: #6c757d;
-        transition: all 0.3s ease;
-        position: relative;
-    }
-
-    .step.active {
-        background: #5a9b9e;
-        color: white;
-    }
-
-    .step.completed {
-        background: #28a745;
-        color: white;
-    }
-
-    
-
-    .question-container {
+    .section-container {
         display: none;
         opacity: 0;
         transform: translateY(20px);
         transition: all 0.4s ease;
-        max-width: 600px;
-        margin: 0 auto;
+        max-width: 800px;
+        margin: 0 auto 30px auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
     }
 
-    .question-container.active {
+    .section-container.active {
         display: block;
         opacity: 1;
         transform: translateY(0);
     }
 
-    .question-header {
+    .section-header {
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        padding: 30px 40px;
         text-align: center;
-        margin-bottom: 40px;
     }
 
-    .question-title {
+    .section-title {
         font-size: 24px;
         font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 15px;
+        margin-bottom: 10px;
     }
 
-    .question-subtitle {
+    .section-description {
         font-size: 16px;
-        color: #7f8c8d;
+        opacity: 0.9;
         line-height: 1.5;
     }
 
-    .form-group {
-        margin-bottom: 30px;
+    .section-body {
+        padding: 40px;
     }
 
-    .form-label {
+    .question-group {
+        margin-bottom: 35px;
+    }
+
+    .question-label {
         display: block;
-        margin-bottom: 15px;
+        font-size: 18px;
         font-weight: 600;
         color: #2c3e50;
-        font-size: 18px;
+        margin-bottom: 15px;
+        line-height: 1.4;
+    }
+
+    .required-mark {
+        color: #e74c3c;
+        margin-left: 4px;
     }
 
     .form-input {
         width: 100%;
-        padding: 18px 20px;
+        padding: 15px 18px;
         border: 2px solid #e9ecef;
         border-radius: 8px;
         font-size: 16px;
         transition: all 0.3s ease;
         background: #fff;
+        font-family: inherit;
     }
 
     .form-input:focus {
@@ -207,118 +184,245 @@
         box-shadow: 0 0 0 3px rgba(90, 155, 158, 0.1);
     }
 
-    .radio-group {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 15px;
-        margin-top: 15px;
+    .form-textarea {
+        min-height: 120px;
+        resize: vertical;
     }
 
-    .radio-option {
+    .form-select {
+        appearance: none;
+        background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23666" d="m0,1l2,2l2,-2z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 15px center;
+        background-size: 12px;
+        padding-right: 40px;
+    }
+
+    /* Multiple Choice & Dropdown */
+    .radio-group, .checkbox-group {
+        display: grid;
+        gap: 12px;
+        margin-top: 10px;
+    }
+
+    .radio-option, .checkbox-option {
         position: relative;
     }
 
-    .radio-option input[type="radio"] {
-        display: none;
+    .radio-option input, .checkbox-option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
     }
 
-    .radio-option label {
+    .radio-option label, .checkbox-option label {
         display: block;
-        padding: 20px;
+        padding: 15px 20px;
         background: #f8f9fa;
         border: 2px solid #e9ecef;
         border-radius: 8px;
         cursor: pointer;
-        text-align: center;
         font-weight: 500;
-        font-size: 16px;
         transition: all 0.3s ease;
-        color: #495057;
+        position: relative;
+        padding-left: 50px;
     }
 
-    .radio-option input[type="radio"]:checked + label {
+    .radio-option label::before, .checkbox-option label::before {
+        content: '';
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        border: 2px solid #dee2e6;
+        background: white;
+    }
+
+    .radio-option label::before {
+        border-radius: 50%;
+    }
+
+    .checkbox-option label::before {
+        border-radius: 4px;
+    }
+
+    .radio-option input:checked + label,
+    .checkbox-option input:checked + label {
+        background: #e8f4f8;
+        border-color: #5a9b9e;
+        color: #2c3e50;
+    }
+
+    .radio-option input:checked + label::before {
+        border-color: #5a9b9e;
         background: #5a9b9e;
+        box-shadow: inset 0 0 0 4px white;
+    }
+
+    .checkbox-option input:checked + label::before {
+        border-color: #5a9b9e;
+        background: #5a9b9e;
+    }
+
+    .checkbox-option input:checked + label::after {
+        content: '✓';
+        position: absolute;
+        left: 19px;
+        top: 50%;
+        transform: translateY(-50%);
         color: white;
-        border-color: #5a9b9e;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
+        font-size: 14px;
+        font-weight: bold;
     }
 
-    .radio-option label:hover {
-        border-color: #5a9b9e;
-        background: #f1f8f9;
+    /* Linear Scale */
+    .linear-scale {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+        margin: 20px 0;
+        flex-wrap: wrap;
     }
 
-    .btn-container {
-        text-align: center;
-        margin-top: 40px;
+    .scale-label {
+        font-size: 14px;
+        color: #7f8c8d;
+        font-weight: 500;
+        white-space: nowrap;
+    }
+
+    .scale-options {
+        display: flex;
+        gap: 8px;
+    }
+
+    .scale-option {
+        position: relative;
+    }
+
+    .scale-option input {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+    }
+
+    .scale-option label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 45px;
+        height: 45px;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        font-weight: 600;
+        color: #6c757d;
+        transition: all 0.3s ease;
+    }
+
+    .scale-option input:checked + label {
+        background: #5a9b9e;
+        border-color: #5a9b9e;
+        color: white;
+        transform: scale(1.1);
+    }
+
+    /* File Upload */
+    .file-upload {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .file-upload input[type="file"] {
+        position: absolute;
+        opacity: 0;
+        cursor: pointer;
+        width: 100%;
+        height: 100%;
+    }
+
+    .file-upload-label {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+        border: 2px dashed #dee2e6;
+        border-radius: 8px;
+        background: #f8f9fa;
+        color: #6c757d;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .file-upload:hover .file-upload-label,
+    .file-upload.has-file .file-upload-label {
+        border-color: #5a9b9e;
+        background: #e8f4f8;
+        color: #5a9b9e;
+    }
+
+    .file-upload-icon {
+        font-size: 24px;
+        margin-right: 10px;
+    }
+
+    /* Navigation */
+    .navigation-buttons {
         display: flex;
         gap: 15px;
-        justify-content: center;
+        justify-content: space-between;
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .btn {
+        padding: 15px 30px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
         align-items: center;
+        gap: 8px;
     }
 
-    .btn-next {
-        background-color: #5a9b9e;
+    .btn-primary {
+        background: #5a9b9e;
         color: white;
-        border: none;
-        padding: 18px 40px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 200px;
     }
 
-    .btn-back {
-        background-color: #6c757d;
+    .btn-primary:hover:not(:disabled) {
+        background: #4a8b8e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(90, 155, 158, 0.3);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
         color: white;
-        border: none;
-        padding: 18px 40px;
-        font-size: 16px;
-        font-weight: 600;
-        border-radius: 8px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        min-width: 200px;
     }
 
-    .btn-back:hover {
-        background-color: #5a6268;
+    .btn-secondary:hover {
+        background: #5a6268;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
+        box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
     }
 
-    .btn-next:hover {
-        background-color: #4a8b8e;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
-    }
-
-    .btn-next:disabled {
-        background-color: #bdc3c7;
+    .btn:disabled {
+        opacity: 0.6;
         cursor: not-allowed;
         transform: none;
         box-shadow: none;
-    }
-
-    .illustration {
-        text-align: center;
-        margin-bottom: 30px;
-    }
-
-    .illustration-placeholder {
-        width: 200px;
-        height: 150px;
-        background: #f8f9fa;
-        border: 2px dashed #dee2e6;
-        border-radius: 12px;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 48px;
-        color: #adb5bd;
     }
 
     .success-message {
@@ -326,8 +430,11 @@
         text-align: center;
         padding: 60px 40px;
         color: #28a745;
-        max-width: 600px;
+        max-width: 800px;
         margin: 0 auto;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     }
 
     .success-icon {
@@ -346,6 +453,7 @@
         font-size: 16px;
         line-height: 1.6;
         color: #6c757d;
+        margin-bottom: 30px;
     }
 
     .error-message {
@@ -356,32 +464,32 @@
         border-radius: 8px;
         margin-bottom: 20px;
         display: none;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     @media (max-width: 768px) {
-        .radio-group {
-            grid-template-columns: 1fr;
-            gap: 12px;
-        }
-        
-        .step-indicator {
-            padding: 15px;
-            gap: 10px;
-        }
-        
-        .step {
-            width: 35px;
-            height: 35px;
-            font-size: 14px;
+        .section-body {
+            padding: 30px 20px;
         }
 
-        .btn-container {
+        .navigation-buttons {
+            flex-direction: column-reverse;
+        }
+
+        .linear-scale {
             flex-direction: column;
-            gap: 10px;
+            gap: 20px;
         }
 
-        .btn-next, .btn-back {
-            min-width: 100%;
+        .scale-options {
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .radio-group, .checkbox-group {
+            gap: 8px;
         }
 
         .progress-bar {
@@ -413,141 +521,193 @@
     <div class="progress-bar">
         <div class="progress-fill" id="progressBar"></div>
         <div class="progress-logo-container" id="progressLogoContainer">
-            <div class="progress-speech-bubble" id="progressBubble">33%</div>
+            <div class="progress-speech-bubble" id="progressBubble">0%</div>
             <div class="progress-logo">
                 <div class="logo-placeholder" id="logoPlaceholder">
-                    <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Diskominfo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                    <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Diskominfo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <span style="display: none;">%</span>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <div class="step-indicator">
-        <div class="step active" id="step1">1</div>
-        <div class="step" id="step2">2</div>
-        <div class="step" id="step3">3</div>
     </div>
 </div>
 
 <div class="error-message" id="errorMessage"></div>
 
-<form id="surveyForm">
+<form id="surveyForm" enctype="multipart/form-data">
     @csrf
-    <!-- Question 1: Nama -->
-    <div class="question-container active" id="question1">
-        {{-- <div class="illustration">
-            <div class="illustration-placeholder">USER</div>
-        </div> --}}
-        
-        <div class="question-header">
-            <h3 class="question-title">Identitas Peserta</h3>
-            <p class="question-subtitle">Silakan isi data diri Anda untuk memulai survei kepuasan layanan</p>
+    
+    @foreach($sections as $sectionIndex => $section)
+    <div class="section-container {{ $sectionIndex === 0 ? 'active' : '' }}" data-section="{{ $sectionIndex }}">
+        <div class="section-header">
+            <h2 class="section-title">{{ $section->title }}</h2>
+            @if($section->description)
+                <p class="section-description">{{ $section->description }}</p>
+            @endif
         </div>
-        
-        <div class="form-group">
-            <label class="form-label" for="nama">Nama Lengkap *</label>
-            <input type="text" id="nama" name="nama" class="form-input" placeholder="Masukkan nama lengkap Anda" required>
-        </div>
-        
-        <div class="btn-container">
-            <button type="button" class="btn-next" onclick="nextQuestion(1)" disabled id="btn1">
-                Lanjut ke Pertanyaan Berikutnya
-            </button>
-        </div>
-    </div>
 
-    <!-- Question 2: Jenis Kelamin -->
-    <div class="question-container" id="question2">
-        {{-- <div class="illustration">
-            <div class="illustration-placeholder">GENDER</div>
-        </div> --}}
-        
-        <div class="question-header">
-            <h3 class="question-title">Data Demografi</h3>
-            <p class="question-subtitle">Bagaimana pendapat Saudara tentang kesesuaian persyaratan pelayanan dengan jenis pelayanannya.</p>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label">Jenis Kelamin *</label>
-            <div class="radio-group">
-                <div class="radio-option">
-                    <input type="radio" id="perempuan" name="jenis_kelamin" value="perempuan" required>
-                    <label for="perempuan">Perempuan</label>
+        <div class="section-body">
+            @foreach($section->questions as $question)
+            <div class="question-group">
+                <label class="question-label">
+                    {{ $question->question_text }}
+                    @if($question->is_required)
+                        <span class="required-mark">*</span>
+                    @endif
+                </label>
+
+                @if($question->question_type === 'short_text')
+                    <input 
+                        type="text" 
+                        name="question_{{ $question->id }}" 
+                        class="form-input"
+                        {{ $question->is_required ? 'required' : '' }}
+                        placeholder="Masukkan jawaban Anda">
+
+                @elseif($question->question_type === 'long_text')
+                    <textarea 
+                        name="question_{{ $question->id }}" 
+                        class="form-input form-textarea"
+                        {{ $question->is_required ? 'required' : '' }}
+                        placeholder="Masukkan jawaban Anda dengan detail"></textarea>
+
+                @elseif($question->question_type === 'multiple_choice')
+                    <div class="radio-group">
+                        @foreach($question->options as $optionIndex => $option)
+                        <div class="radio-option">
+                            <input 
+                                type="radio" 
+                                name="question_{{ $question->id }}" 
+                                id="q{{ $question->id }}_{{ $optionIndex }}"
+                                value="{{ $option }}"
+                                {{ $question->is_required ? 'required' : '' }}>
+                            <label for="q{{ $question->id }}_{{ $optionIndex }}">{{ $option }}</label>
+                        </div>
+                        @endforeach
+                    </div>
+
+                @elseif($question->question_type === 'checkbox')
+                    <div class="checkbox-group">
+                        @foreach($question->options as $optionIndex => $option)
+                        <div class="checkbox-option">
+                            <input 
+                                type="checkbox" 
+                                name="question_{{ $question->id }}[]" 
+                                id="q{{ $question->id }}_{{ $optionIndex }}"
+                                value="{{ $option }}">
+                            <label for="q{{ $question->id }}_{{ $optionIndex }}">{{ $option }}</label>
+                        </div>
+                        @endforeach
+                    </div>
+
+                @elseif($question->question_type === 'dropdown')
+                    <select 
+                        name="question_{{ $question->id }}" 
+                        class="form-input form-select"
+                        {{ $question->is_required ? 'required' : '' }}>
+                        <option value="">-- Pilih jawaban --</option>
+                        @foreach($question->options as $option)
+                            <option value="{{ $option }}">{{ $option }}</option>
+                        @endforeach
+                    </select>
+
+                @elseif($question->question_type === 'file_upload')
+                    <div class="file-upload">
+                        <input 
+                            type="file" 
+                            name="question_{{ $question->id }}" 
+                            id="file_{{ $question->id }}"
+                            {{ $question->is_required ? 'required' : '' }}
+                            accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
+                            onchange="updateFileLabel(this)">
+                        <div class="file-upload-label">
+                            <span class="file-upload-icon">📎</span>
+                            <span class="file-upload-text">Klik untuk memilih file</span>
+                        </div>
+                    </div>
+
+                @elseif($question->question_type === 'linear_scale')
+                    <div class="linear-scale">
+                        @if(isset($question->settings['scale_min_label']))
+                            <div class="scale-label">{{ $question->settings['scale_min_label'] }}</div>
+                        @endif
+                        
+                        <div class="scale-options">
+                            @for($i = $question->settings['scale_min'] ?? 1; $i <= ($question->settings['scale_max'] ?? 5); $i++)
+                            <div class="scale-option">
+                                <input 
+                                    type="radio" 
+                                    name="question_{{ $question->id }}" 
+                                    id="scale_{{ $question->id }}_{{ $i }}"
+                                    value="{{ $i }}"
+                                    {{ $question->is_required ? 'required' : '' }}>
+                                <label for="scale_{{ $question->id }}_{{ $i }}">{{ $i }}</label>
+                            </div>
+                            @endfor
+                        </div>
+
+                        @if(isset($question->settings['scale_max_label']))
+                            <div class="scale-label">{{ $question->settings['scale_max_label'] }}</div>
+                        @endif
+                    </div>
+                @endif
+            </div>
+            @endforeach
+
+            <div class="navigation-buttons">
+                <div>
+                    @if($sectionIndex > 0)
+                        <button type="button" class="btn btn-secondary" onclick="previousSection()">
+                            ← Sebelumnya
+                        </button>
+                    @endif
                 </div>
-                <div class="radio-option">
-                    <input type="radio" id="laki_laki" name="jenis_kelamin" value="laki_laki" required>
-                    <label for="laki_laki">Laki-laki</label>
+                <div>
+                    @if($sectionIndex < $sections->count() - 1)
+                        <button type="button" class="btn btn-primary" onclick="nextSection()">
+                            Selanjutnya →
+                        </button>
+                    @else
+                        <button type="button" class="btn btn-primary" onclick="submitSurvey()">
+                            Kirim Survei
+                        </button>
+                    @endif
                 </div>
             </div>
         </div>
-        
-        <div class="btn-container">
-            <button type="button" class="btn-back" onclick="prevQuestion(2)">
-                Kembali
-            </button>
-            <button type="button" class="btn-next" onclick="nextQuestion(2)" disabled id="btn2">
-                Lanjut ke Pertanyaan Berikutnya
-            </button>
-        </div>
     </div>
+    @endforeach
 
-    <!-- Question 3: Usia -->
-    <div class="question-container" id="question3">
-        {{-- <div class="illustration">
-            <div class="illustration-placeholder">AGE</div>
-        </div> --}}
-        
-        <div class="question-header">
-            <h3 class="question-title">Informasi Usia</h3>
-            <p class="question-subtitle">Mohon lengkapi informasi usia Anda untuk melanjutkan ke tahap evaluasi layanan</p>
-        </div>
-        
-        <div class="form-group">
-            <label class="form-label" for="usia">Usia (Tahun) *</label>
-            <input type="number" id="usia" name="usia" class="form-input" placeholder="Masukkan usia Anda" min="6" max="100" required>
-        </div>
-        
-        <div class="btn-container">
-            <button type="button" class="btn-back" onclick="prevQuestion(3)">
-                Kembali
-            </button>
-            <button type="button" class="btn-next" onclick="submitSurvey()" disabled id="btn3">
-                Selesaikan Data Pribadi
-            </button>
-        </div>
-    </div>
-
+    <!-- Success Message -->
     <div class="success-message" id="successMessage">
-        <div class="success-icon">SUCCESS</div>
-        <h3>Terima Kasih!</h3>
-        <p>Data pribadi Anda telah berhasil disimpan. Survei kepuasan layanan akan dilanjutkan dengan pertanyaan evaluasi layanan Dinas Komunikasi dan Informatika Kabupaten Lamongan.</p>
-    </div>
+    <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+    <h3>Survei Berhasil Dikirim!</h3>
+    <p>Terima kasih atas partisipasi Anda dalam survei kepuasan masyarakat. Feedback Anda sangat berharga untuk meningkatkan kualitas layanan Dinas Komunikasi dan Informatika Kabupaten Lamongan.</p>
+    <a href="{{ route('survey.index') }}" class="btn btn-primary">
+        <i class="fas fa-home"></i> Kembali ke Awal
+    </a>
+</div>
 </form>
 @endsection
 
 @push('scripts')
 <script>
-    let currentQuestion = 1;
-    const totalQuestions = 3;
+    let currentSection = 0;
+    const totalSections = {{ $sections->count() }};
+    let isSubmitting = false;
 
-    // Form validation and navigation
-    document.getElementById('nama').addEventListener('input', function() {
-        const btn = document.getElementById('btn1');
-        btn.disabled = this.value.trim() === '';
-    });
-
-    document.querySelectorAll('input[name="jenis_kelamin"]').forEach(radio => {
-        radio.addEventListener('change', function() {
-            const btn = document.getElementById('btn2');
-            btn.disabled = false;
-        });
-    });
-
-    document.getElementById('usia').addEventListener('input', function() {
-        const btn = document.getElementById('btn3');
-        const isValid = this.value >= 6 && this.value <= 100 && this.value !== '';
-        btn.disabled = !isValid;
-    });
+    function updateProgress() {
+        const progress = ((currentSection + 1) / totalSections) * 100;
+        document.getElementById('progressBar').style.width = progress + '%';
+        document.getElementById('progressLogoContainer').style.left = progress + '%';
+        document.getElementById('progressBubble').textContent = Math.round(progress) + '%';
+        
+        // Trigger animasi bubble
+        const bubble = document.getElementById('progressBubble');
+        bubble.style.animation = 'none';
+        bubble.offsetHeight; // Trigger reflow
+        bubble.style.animation = 'bounceIn 0.6s ease forwards';
+    }
 
     function showError(message) {
         const errorDiv = document.getElementById('errorMessage');
@@ -558,165 +718,256 @@
         }, 5000);
     }
 
-    function nextQuestion(current) {
-        // Validate current question
-        if (current === 1) {
-            const nama = document.getElementById('nama').value.trim();
-            if (!nama) {
-                showError('Mohon isi nama lengkap Anda');
-                return;
-            }
-        } else if (current === 2) {
-            const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
-            if (!jenisKelamin) {
-                showError('Mohon pilih jenis kelamin');
-                return;
+    function validateCurrentSection() {
+        const currentSectionEl = document.querySelector(`[data-section="${currentSection}"]`);
+        const requiredInputs = currentSectionEl.querySelectorAll('[required]');
+        
+        for (let input of requiredInputs) {
+            if (input.type === 'checkbox') {
+                const checkboxGroup = currentSectionEl.querySelectorAll(`[name="${input.name}"]:checked`);
+                if (checkboxGroup.length === 0) {
+                    showError('Mohon lengkapi semua pertanyaan yang wajib diisi');
+                    input.focus();
+                    return false;
+                }
+            } else if (input.type === 'radio') {
+                const radioGroup = currentSectionEl.querySelectorAll(`[name="${input.name}"]:checked`);
+                if (radioGroup.length === 0) {
+                    showError('Mohon lengkapi semua pertanyaan yang wajib diisi');
+                    input.focus();
+                    return false;
+                }
+            } else if (!input.value.trim()) {
+                showError('Mohon lengkapi semua pertanyaan yang wajib diisi');
+                input.focus();
+                return false;
             }
         }
-
-        // Hide current question
-        document.getElementById('question' + current).classList.remove('active');
         
-        // Show next question
-        const nextQ = current + 1;
-        if (nextQ <= totalQuestions) {
-            setTimeout(() => {
-                document.getElementById('question' + nextQ).classList.add('active');
-                currentQuestion = nextQ;
-                updateProgress();
-                updateSteps();
-            }, 300);
+        return true;
+    }
+
+    function nextSection() {
+        if (!validateCurrentSection()) {
+            return;
+        }
+
+        if (currentSection < totalSections - 1) {
+            document.querySelector(`[data-section="${currentSection}"]`).classList.remove('active');
+            currentSection++;
+            document.querySelector(`[data-section="${currentSection}"]`).classList.add('active');
+            updateProgress();
+            
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
-    function prevQuestion(current) {
-        // Hide current question
-        document.getElementById('question' + current).classList.remove('active');
-        
-        // Show previous question
-        const prevQ = current - 1;
-        if (prevQ >= 1) {
-            setTimeout(() => {
-                document.getElementById('question' + prevQ).classList.add('active');
-                currentQuestion = prevQ;
-                updateProgress();
-                updateSteps();
-            }, 300);
+    function previousSection() {
+        if (currentSection > 0) {
+            document.querySelector(`[data-section="${currentSection}"]`).classList.remove('active');
+            currentSection--;
+            document.querySelector(`[data-section="${currentSection}"]`).classList.add('active');
+            updateProgress();
+            
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         }
     }
 
-    function submitSurvey() {
-        const usia = document.getElementById('usia').value;
-        if (!usia || usia < 6 || usia > 100) {
-            showError('Minimal usia 6 tahun');
-            return;
-        }
+    // Updated JavaScript section for survey/index.blade.php
+function submitSurvey() {
+    if (isSubmitting) return;
+    
+    if (!validateCurrentSection()) {
+        return;
+    }
 
-        // Validate all fields
-        const nama = document.getElementById('nama').value.trim();
-        const jenisKelamin = document.querySelector('input[name="jenis_kelamin"]:checked');
+    isSubmitting = true;
+    const submitBtn = event.target;
+    submitBtn.disabled = true;
+    submitBtn.textContent = '⏳ Mengirim...';
+
+    const formData = new FormData(document.getElementById('surveyForm'));
+    
+    // Debug: Log form data
+    console.log('Form data being sent:');
+    for (let [key, value] of formData.entries()) {
+        console.log(key, value);
+    }
+
+    fetch('{{ route("survey.store") }}', {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+        }
+    })
+    .then(response => {
+        console.log('Response status:', response.status);
+        console.log('Response headers:', response.headers);
         
-        if (!nama) {
-            showError('Mohon isi nama lengkap Anda');
-            return;
-        }
+        // Handle both success and error responses
+        return response.json().then(data => ({
+            status: response.status,
+            ok: response.ok,
+            data: data
+        }));
+    })
+    .then(({status, ok, data}) => {
+        console.log('Response data:', data);
         
-        if (!jenisKelamin) {
-            showError('Mohon pilih jenis kelamin');
-            return;
-        }
+        if (ok && data.success) {
+            // Hide current section
+            document.querySelector(`[data-section="${currentSection}"]`).classList.remove('active');
+            
+            // Show success message
+            document.getElementById('successMessage').style.display = 'block';
+            
+            // Update progress to 100%
+            document.getElementById('progressBar').style.width = '100%';
+            document.getElementById('progressLogoContainer').style.left = '100%';
+            document.getElementById('progressBubble').textContent = '100%';
+            
+            // Scroll to top
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
 
-        // Disable submit button
-        const btn = document.getElementById('btn3');
-        btn.disabled = true;
-        btn.textContent = 'Menyimpan...';
-
-        // Prepare form data as FormData for better compatibility
-        const formData = new FormData();
-        formData.append('nama', nama);
-        formData.append('jenis_kelamin', jenisKelamin.value);
-        formData.append('usia', parseInt(document.getElementById('usia').value));
-        formData.append('_token', document.querySelector('input[name="_token"]').value);
-
-        // Submit to Laravel backend
-        fetch('{{ route("survey.store") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-            },
-            body: formData
-        })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
+            // Clear any saved draft data
+            try {
+                sessionStorage.removeItem('surveyDraft');
+            } catch (e) {
+                console.warn('Could not clear session storage');
             }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                // Hide current question
-                document.getElementById('question3').classList.remove('active');
-                
-                // Show success message
-                setTimeout(() => {
-                    document.getElementById('successMessage').style.display = 'block';
-                    updateProgress(100);
-                    
-                    // Mark all steps as completed
-                    document.querySelectorAll('.step').forEach(step => {
-                        step.classList.add('completed');
-                        step.classList.remove('active');
-                    });
-                }, 300);
+            
+            console.log('Survey submitted successfully!', data);
+        } else {
+            // Handle validation errors
+            if (status === 422 && data.errors) {
+                let errorMessages = [];
+                Object.values(data.errors).forEach(errorArray => {
+                    if (Array.isArray(errorArray)) {
+                        errorMessages = errorMessages.concat(errorArray);
+                    }
+                });
+                throw new Error(errorMessages.join('\n') || 'Validation failed');
             } else {
-                showError(data.message || 'Terjadi kesalahan saat menyimpan data.');
-                btn.disabled = false;
-                btn.textContent = 'Selesaikan Data Pribadi';
+                throw new Error(data.message || 'Server error occurred');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showError('Terjadi kesalahan jaringan. Silakan coba lagi.');
-            btn.disabled = false;
-            btn.textContent = 'Selesaikan Data Pribadi';
-        });
+        }
+    })
+    .catch(error => {
+        console.error('Submit error:', error);
+        
+        let errorMessage = 'Terjadi kesalahan saat mengirim survei.';
+        
+        if (error.message && error.message !== 'Failed to fetch') {
+            errorMessage = error.message;
+        } else if (error.message === 'Failed to fetch') {
+            errorMessage = 'Koneksi terputus. Periksa koneksi internet Anda.';
+        }
+        
+        showError(errorMessage + ' Silakan coba lagi.');
+        
+        isSubmitting = false;
+        submitBtn.disabled = false;
+        submitBtn.textContent = '🚀 Kirim Survei';
+    });
+}
+
+    function updateFileLabel(input) {
+        const fileUpload = input.closest('.file-upload');
+        const label = fileUpload.querySelector('.file-upload-text');
+        
+        if (input.files && input.files[0]) {
+            label.textContent = input.files[0].name;
+            fileUpload.classList.add('has-file');
+        } else {
+            label.textContent = 'Klik untuk memilih file';
+            fileUpload.classList.remove('has-file');
+        }
     }
 
-    function updateProgress(customPercentage = null) {
-        const progressBar = document.getElementById('progressBar');
-        const progressLogoContainer = document.getElementById('progressLogoContainer');
-        const progressBubble = document.getElementById('progressBubble');
-        
-        const percentage = customPercentage || (currentQuestion / totalQuestions) * 100;
-        progressBar.style.width = percentage + '%';
-        
-        // Update posisi logo mengikuti progress
-        progressLogoContainer.style.left = percentage + '%';
-        
-        // Update text di speech bubble
-        progressBubble.textContent = Math.round(percentage) + '%';
-        
-        // Trigger animasi bubble
-        progressBubble.style.animation = 'none';
-        progressBubble.offsetHeight; // Trigger reflow
-        progressBubble.style.animation = 'bounceIn 0.6s ease forwards';
-    }
-
-    function updateSteps() {
-        document.querySelectorAll('.step').forEach((step, index) => {
-            step.classList.remove('active', 'completed');
-            if (index + 1 < currentQuestion) {
-                step.classList.add('completed');
-            } else if (index + 1 === currentQuestion) {
-                step.classList.add('active');
+    // Auto-save functionality
+    let autoSaveTimeout;
+    function autoSave() {
+        clearTimeout(autoSaveTimeout);
+        autoSaveTimeout = setTimeout(() => {
+            const formData = new FormData(document.getElementById('surveyForm'));
+            const savedData = {};
+            
+            for (let [key, value] of formData.entries()) {
+                if (savedData[key]) {
+                    if (!Array.isArray(savedData[key])) {
+                        savedData[key] = [savedData[key]];
+                    }
+                    savedData[key].push(value);
+                } else {
+                    savedData[key] = value;
+                }
             }
-        });
+            
+            // Save to sessionStorage (dalam environment yang mendukung)
+            try {
+                sessionStorage.setItem('surveyDraft', JSON.stringify(savedData));
+            } catch (e) {
+                // SessionStorage not available
+            }
+        }, 1000);
     }
 
     // Initialize
     document.addEventListener('DOMContentLoaded', function() {
         updateProgress();
-        updateSteps();
+        
+        // Add auto-save listeners
+        document.addEventListener('input', autoSave);
+        document.addEventListener('change', autoSave);
+
+        // Load saved data on page load
+        try {
+            const savedData = sessionStorage.getItem('surveyDraft');
+            if (savedData) {
+                const data = JSON.parse(savedData);
+                
+                for (let [name, value] of Object.entries(data)) {
+                    const inputs = document.querySelectorAll(`[name="${name}"]`);
+                    
+                    inputs.forEach(input => {
+                        if (input.type === 'checkbox' || input.type === 'radio') {
+                            if (Array.isArray(value)) {
+                                input.checked = value.includes(input.value);
+                            } else {
+                                input.checked = input.value === value;
+                            }
+                        } else if (input.type !== 'file') {
+                            input.value = value;
+                        }
+                    });
+                }
+            }
+        } catch (e) {
+            // Error loading saved data
+        }
+        
+        // Add keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && e.ctrlKey) {
+                if (currentSection < totalSections - 1) {
+                    nextSection();
+                } else {
+                    submitSurvey();
+                }
+            }
+        });
     });
 </script>
 @endpush

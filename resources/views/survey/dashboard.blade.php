@@ -1,4 +1,4 @@
-{{-- resources/views/survey/dashboard.blade.php --}}
+{{-- resources/views/survey/dashboard.blade.php
 @extends('layouts.app')
 
 @section('title', 'Dashboard Survei Kepuasan')
@@ -250,7 +250,7 @@
 @section('content')
 <div class="dashboard-container">
     <div class="dashboard-header">
-        <h1 class="dashboard-title">Dashboard Survei Kepuasan</h1>
+        <h1 class="dashboard-title">Dashboar Survei Kepuasan</h1>
         <p class="dashboard-subtitle">Statistik dan data survei kepuasan layanan Diskominfo Lamongan</p>
         
         <a href="{{ route('survey.export') }}" class="export-btn">
@@ -363,4 +363,4 @@
         </div>
     </div>
 </div>
-@endsection
+@endsection --}}

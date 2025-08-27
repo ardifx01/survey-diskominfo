@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\AdminUser;
 use App\Models\Survey;
+use App\Models\SurveyQuestion;
+use App\Models\SurveyResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -46,25 +48,55 @@ class AdminController extends Controller
         }
 
         $totalSurveys = Survey::count();
-        $maleCount = Survey::byGender('laki_laki')->count();
-        $femaleCount = Survey::byGender('perempuan')->count();
         
-        // Statistik usia
-        $ageStats = Survey::select(
-            DB::raw('CASE 
-                WHEN usia BETWEEN 15 AND 25 THEN "15-25"
-                WHEN usia BETWEEN 26 AND 35 THEN "26-35"
-                WHEN usia BETWEEN 36 AND 45 THEN "36-45"
-                WHEN usia BETWEEN 46 AND 55 THEN "46-55"
-                WHEN usia > 55 THEN "55+"
-                END as age_group'),
-            DB::raw('COUNT(*) as count')
-        )
-        ->groupBy('age_group')
-        ->get();
+        // Hitung gender berdasarkan responses (menggunakan helper method dari model)
+        $surveys = Survey::with(['responses.question'])->get();
+        $maleCount = 0;
+        $femaleCount = 0;
+
+        foreach ($surveys as $survey) {
+            $jenisKelamin = $survey->jenis_kelamin;
+            if (strpos($jenisKelamin, 'laki') !== false || strpos($jenisKelamin, 'Laki') !== false) {
+                $maleCount++;
+            } elseif (strpos($jenisKelamin, 'perempuan') !== false || strpos($jenisKelamin, 'Perempuan') !== false) {
+                $femaleCount++;
+            }
+        }
+        
+        // Statistik usia berdasarkan responses
+        $ageGroups = [
+            '15-25' => 0,
+            '26-35' => 0,
+            '36-45' => 0,
+            '46-55' => 0,
+            '55+' => 0
+        ];
+
+        foreach ($surveys as $survey) {
+            $usia = $survey->usia; // Menggunakan accessor
+            if ($usia >= 15 && $usia <= 25) {
+                $ageGroups['15-25']++;
+            } elseif ($usia >= 26 && $usia <= 35) {
+                $ageGroups['26-35']++;
+            } elseif ($usia >= 36 && $usia <= 45) {
+                $ageGroups['36-45']++;
+            } elseif ($usia >= 46 && $usia <= 55) {
+                $ageGroups['46-55']++;
+            } elseif ($usia > 55) {
+                $ageGroups['55+']++;
+            }
+        }
+
+        // Convert to collection format
+        $ageStats = collect($ageGroups)->map(function($count, $group) {
+            return (object)[
+                'age_group' => $group,
+                'count' => $count
+            ];
+        });
 
         // Data survei dengan paginasi
-        $surveys = Survey::latest()->paginate(20);
+        $surveys = Survey::with(['responses.question'])->latest()->paginate(20);
 
         // Statistik per hari dalam 7 hari terakhir
         $dailyStats = Survey::select(
@@ -93,18 +125,45 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
-        $surveys = Survey::orderBy('created_at', 'desc')->get();
+        $surveys = Survey::with(['responses.question'])->orderBy('created_at', 'desc')->get();
+        $questions = SurveyQuestion::active()->ordered()->get();
         
-        $csvData = "No,Nama,Jenis Kelamin,Usia,IP Address,User Agent,Tanggal Pengisian\n";
+        // Header CSV
+        $headers = ['ID', 'Tanggal Pengisian', 'IP Address', 'User Agent'];
         
-        foreach ($surveys as $index => $survey) {
-            $csvData .= ($index + 1) . "," . 
-                    '"' . str_replace('"', '""', $survey->nama) . '",' . 
-                    $survey->jenis_kelamin_label . "," . 
-                    $survey->usia . "," . 
-                    '"' . $survey->ip_address . '",' . 
-                    '"' . str_replace('"', '""', $survey->user_agent) . '",' . 
-                    $survey->created_at->format('Y-m-d H:i:s') . "\n";
+        // Tambahkan header untuk setiap pertanyaan
+        foreach ($questions as $question) {
+            $headers[] = $question->question_text;
+        }
+
+        $csvData = implode(',', array_map(function($header) {
+            return '"' . str_replace('"', '""', $header) . '"';
+        }, $headers)) . "\n";
+        
+        foreach ($surveys as $survey) {
+            $row = [
+                $survey->id,
+                $survey->created_at->format('Y-m-d H:i:s'),
+                $survey->ip_address ?: '',
+                str_replace('"', '""', $survey->user_agent ?: '')
+            ];
+
+            // Tambahkan jawaban untuk setiap pertanyaan
+            foreach ($questions as $question) {
+                $response = $survey->responses->firstWhere('question_id', $question->id);
+                $answer = $response ? $response->answer : '';
+                
+                // Format khusus untuk file upload
+                if ($question->question_type === 'file_upload' && $response && $response->answer_data) {
+                    $answer = $response->answer_data['filename'] ?? $answer;
+                }
+                
+                $row[] = str_replace('"', '""', $answer);
+            }
+
+            $csvData .= implode(',', array_map(function($field) {
+                return '"' . $field . '"';
+            }, $row)) . "\n";
         }
 
         return response($csvData)
@@ -129,8 +188,9 @@ class AdminController extends Controller
         }
 
         $survey = Survey::findOrFail($id);
+        $surveyName = $survey->nama; // Akan menggunakan accessor untuk mendapatkan nama dari response
         $survey->delete();
 
-        return redirect()->route('admin.dashboard')->with('success', 'Data survei berhasil dihapus.');
+        return redirect()->route('admin.dashboard')->with('success', 'Data survei ' . $surveyName . ' berhasil dihapus.');
     }
 }

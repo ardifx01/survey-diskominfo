@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Survei Kepuasan Layanan Diskominfo Lamongan')</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -368,37 +369,30 @@
                 <div class="footer-grid">
                     <!-- Tentang -->
                     <div class="footer-section">
-                        <h4>Dinas Komunikasi dan Informatika</h4>
+                        {{-- <h4>Dinas Komunikasi dan Informatika</h4>
                         <p>Kabupaten Lamongan</p>
-                        <p>Melayani masyarakat dengan dedikasi tinggi dalam bidang komunikasi dan informatika untuk mewujudkan Lamongan yang lebih maju dan berkarakter.</p>
+                        <p>Melayani masyarakat dengan dedikasi tinggi dalam bidang komunikasi dan informatika untuk mewujudkan Lamongan yang lebih maju dan berkarakter.</p> --}}
                         
                         <div class="footer-contact">
-                            <div class="icon">📍</div>
+                            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
                             <span>Jl. Basuki Rahmad No. 1, Kecamatan Lamongan,</span>
                         </div>
                         
                         <div class="footer-contact">
-                            <div class="icon">📞</div>
+                            <div class="icon"><i class="fas fa-phone"></i></div>
                             <span>(0322) 311234</span>
                         </div>
                         
                         <div class="footer-contact">
-                            <div class="icon">📧</div>
+                            <div class="icon"><i class="fas fa-envelope"></i></div>
                             <span>diskominfo@lamongankab.go.id</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="footer-bottom">
-                    <p>&copy; 2025 Dinas Komunikasi dan Informatika Kabupaten Lamongan</p>
+                    <p>&copy; {{ date('Y') }} Dinas Komunikasi dan Informatika Kabupaten Lamongan</p>
                     <p>Survei Kepuasan Masyarakat - Sistem Informasi Pelayanan Publik</p>
-                    
-                    <div class="footer-links">
-                        <a href="#privacy">Kebijakan Privasi</a>
-                        <a href="#terms">Syarat & Ketentuan</a>
-                        <a href="#sitemap">Peta Situs</a>
-                        <a href="{{ route('admin.login') }}">Admin</a>
-                    </div>
                 </div>
             </div>
         </div>

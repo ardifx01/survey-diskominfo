@@ -1,4 +1,4 @@
-{{--resources/views/dynamic-survey/index.blade.php --}}
+{{-- resources/views/dynamic-survey/index.blade.php
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -869,4 +869,4 @@
         });
     </script>
 </body>
-</html>
+</html> --}}
