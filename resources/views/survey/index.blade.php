@@ -621,7 +621,7 @@
                             accept=".jpg,.jpeg,.png,.pdf,.doc,.docx"
                             onchange="updateFileLabel(this)">
                         <div class="file-upload-label">
-                            <span class="file-upload-icon">📎</span>
+                            <span class="file-upload-icon"></span>
                             <span class="file-upload-text">Klik untuk memilih file</span>
                         </div>
                     </div>

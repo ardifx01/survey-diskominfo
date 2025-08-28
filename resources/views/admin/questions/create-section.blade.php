@@ -15,6 +15,7 @@
 @endsection
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
     /* Form Styles */
     .form-container {
@@ -183,7 +184,7 @@
 @section('content')
 <div class="form-container">
     <div class="form-header">
-        <div class="form-title">📝 Informasi Bagian</div>
+        <div class="form-title"><i class="fas fa-file-alt"></i> Informasi Bagian</div>
         <div class="form-subtitle">Isi detail bagian yang akan ditambahkan ke survei</div>
     </div>
 
@@ -217,17 +218,17 @@
 
         <div class="form-actions">
             <a href="{{ route('admin.questions.index') }}" class="btn btn-secondary">
-                ← Batal
+                <i class="fas fa-arrow-left"></i> Batal
             </a>
             <button type="submit" class="btn btn-primary">
-                💾 Simpan Bagian
+                <i class="fas fa-save"></i> Simpan Bagian
             </button>
         </div>
     </form>
 </div>
 
 <div class="tips-box">
-    <h4 class="tips-title">💡 Tips Membuat Bagian</h4>
+    <h4 class="tips-title"><i class="fas fa-lightbulb"></i> Tips Membuat Bagian</h4>
     <ul class="tips-list">
         <li><strong>Kelompokkan pertanyaan serupa:</strong> Misalnya "Data Diri", "Evaluasi Layanan", "Saran"</li>
         <li><strong>Urutan logis:</strong> Mulai dari informasi umum, lalu spesifik</li>
@@ -249,9 +250,9 @@
         const title = this.value.trim();
         const formTitle = document.querySelector('.form-title');
         if (title) {
-            formTitle.textContent = `📝 ${title}`;
+            formTitle.innerHTML = `<i class="fas fa-file-alt"></i> ${title}`;
         } else {
-            formTitle.textContent = '📝 Informasi Bagian';
+            formTitle.innerHTML = '<i class="fas fa-file-alt"></i> Informasi Bagian';
         }
     });
 </script>

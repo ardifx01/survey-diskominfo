@@ -17,6 +17,7 @@
 @endsection
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
     /* Form Styles */
     .form-container {
@@ -293,7 +294,7 @@
 @section('content')
 <div class="form-container">
     <div class="form-header">
-        <div class="form-title">❓ Detail Pertanyaan</div>
+        <div class="form-title"><i class="fas fa-question-circle"></i> Detail Pertanyaan</div>
         <div class="form-subtitle">Isi informasi lengkap pertanyaan yang akan ditambahkan</div>
     </div>
 
@@ -317,43 +318,43 @@
             <div class="question-type-cards">
                 <div class="type-card" onclick="selectType('short_text')">
                     <input type="radio" name="question_type" value="short_text" id="type_short_text" {{ old('question_type') == 'short_text' ? 'checked' : '' }}>
-                    <div class="type-title">📝 Jawaban Singkat</div>
+                    <div class="type-title"><i class="fas fa-edit"></i> Jawaban Singkat</div>
                     <div class="type-description">Untuk teks pendek seperti nama, email, dll</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('long_text')">
                     <input type="radio" name="question_type" value="long_text" id="type_long_text" {{ old('question_type') == 'long_text' ? 'checked' : '' }}>
-                    <div class="type-title">📄 Paragraf</div>
+                    <div class="type-title"><i class="fas fa-file-alt"></i> Paragraf</div>
                     <div class="type-description">Untuk jawaban panjang atau saran</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('multiple_choice')">
                     <input type="radio" name="question_type" value="multiple_choice" id="type_multiple_choice" {{ old('question_type') == 'multiple_choice' ? 'checked' : '' }}>
-                    <div class="type-title">🔘 Pilihan Ganda</div>
+                    <div class="type-title"><i class="fas fa-dot-circle"></i> Pilihan Ganda</div>
                     <div class="type-description">Pilih satu dari beberapa opsi</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('checkbox')">
                     <input type="radio" name="question_type" value="checkbox" id="type_checkbox" {{ old('question_type') == 'checkbox' ? 'checked' : '' }}>
-                    <div class="type-title">☑️ Kotak Centang</div>
+                    <div class="type-title"><i class="fas fa-check-square"></i> Kotak Centang</div>
                     <div class="type-description">Bisa pilih lebih dari satu opsi</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('dropdown')">
                     <input type="radio" name="question_type" value="dropdown" id="type_dropdown" {{ old('question_type') == 'dropdown' ? 'checked' : '' }}>
-                    <div class="type-title">📋 Drop-down</div>
+                    <div class="type-title"><i class="fas fa-list"></i> Drop-down</div>
                     <div class="type-description">Pilih satu dari menu turun</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('file_upload')">
                     <input type="radio" name="question_type" value="file_upload" id="type_file_upload" {{ old('question_type') == 'file_upload' ? 'checked' : '' }}>
-                    <div class="type-title">📎 Upload File</div>
+                    <div class="type-title"><i class="fas fa-paperclip"></i> Upload File</div>
                     <div class="type-description">Responden bisa kirim file</div>
                 </div>
 
                 <div class="type-card" onclick="selectType('linear_scale')">
                     <input type="radio" name="question_type" value="linear_scale" id="type_linear_scale" {{ old('question_type') == 'linear_scale' ? 'checked' : '' }}>
-                    <div class="type-title">📊 Skala Linier</div>
+                    <div class="type-title"><i class="fas fa-chart-bar"></i> Skala Linier</div>
                     <div class="type-description">Memberi nilai dengan angka (1-5, 1-10, dll)</div>
                 </div>
             </div>
@@ -361,23 +362,23 @@
 
         <!-- Options Container for Multiple Choice, Checkbox, Dropdown -->
         <div id="optionsContainer" class="options-container">
-            <h4 style="margin-bottom: 15px;">⚙️ Opsi Jawaban</h4>
+            <h4 style="margin-bottom: 15px;"><i class="fas fa-cog"></i> Opsi Jawaban</h4>
             <div id="optionsList">
                 <div class="option-item">
                     <input type="text" name="options[]" class="option-input" placeholder="Opsi 1" value="{{ old('options.0') }}">
-                    <button type="button" class="btn-remove-option" onclick="removeOption(this)">❌</button>
+                    <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                 </div>
                 <div class="option-item">
                     <input type="text" name="options[]" class="option-input" placeholder="Opsi 2" value="{{ old('options.1') }}">
-                    <button type="button" class="btn-remove-option" onclick="removeOption(this)">❌</button>
+                    <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
                 </div>
             </div>
-            <button type="button" class="btn-add-option" onclick="addOption()">➕ Tambah Opsi</button>
+            <button type="button" class="btn-add-option" onclick="addOption()"><i class="fas fa-plus"></i> Tambah Opsi</button>
         </div>
 
         <!-- Scale Settings for Linear Scale -->
         <div id="scaleContainer" class="scale-container">
-            <h4 style="margin-bottom: 15px;">📊 Pengaturan Skala</h4>
+            <h4 style="margin-bottom: 15px;"><i class="fas fa-chart-bar"></i> Pengaturan Skala</h4>
             <div class="scale-row">
                 <div>
                     <label class="form-label" for="scale_min">Nilai Minimum</label>
@@ -410,10 +411,10 @@
 
         <div class="form-actions">
             <a href="{{ route('admin.questions.index') }}" class="btn btn-secondary">
-                ← Batal
+                <i class="fas fa-arrow-left"></i> Batal
             </a>
             <button type="submit" class="btn btn-primary">
-                💾 Simpan Pertanyaan
+                <i class="fas fa-save"></i> Simpan Pertanyaan
             </button>
         </div>
     </form>
@@ -458,7 +459,7 @@
         optionItem.className = 'option-item';
         optionItem.innerHTML = `
             <input type="text" name="options[]" class="option-input" placeholder="Opsi ${optionCount}">
-            <button type="button" class="btn-remove-option" onclick="removeOption(this)">❌</button>
+            <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
         `;
         
         optionsList.appendChild(optionItem);

@@ -7,6 +7,7 @@
 @section('page-subtitle', 'Kelola bagian dan pertanyaan survei kepuasan')
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
     /* Action Buttons */
     .action-buttons {
@@ -227,11 +228,11 @@
 <!-- Action Buttons -->
 <div class="action-buttons">
     <a href="{{ route('admin.questions.create-section') }}" class="btn btn-primary">
-        <span>➕</span>
+        <i class="fas fa-plus"></i>
         Tambahkan Bagian
     </a>
     <a href="{{ route('survey.index') }}" class="btn btn-success">
-        <span>👁️</span>
+        <i class="fas fa-eye"></i>
         Preview Survei
     </a>
 </div>
@@ -252,13 +253,13 @@
                     {{ $section->is_active ? 'Aktif' : 'Nonaktif' }}
                 </span>
                 <a href="{{ route('admin.questions.create-question', $section->id) }}" class="btn btn-success btn-sm">
-                    ➕ Tambah Pertanyaan
+                    <i class="fas fa-plus"></i> Tambah Pertanyaan
                 </a>
                 <a href="#" onclick="toggleSection({{ $section->id }})" class="btn btn-warning btn-sm">
-                    {{ $section->is_active ? '🔒 Nonaktifkan' : '🔓 Aktifkan' }}
+                    <i class="fas {{ $section->is_active ? 'fa-lock' : 'fa-unlock' }}"></i> {{ $section->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                 </a>
                 <a href="#" onclick="deleteSection({{ $section->id }}, '{{ $section->title }}')" class="btn btn-danger btn-sm">
-                    🗑️ Hapus
+                    <i class="fas fa-trash"></i> Hapus
                 </a>
             </div>
         </div>
@@ -309,13 +310,13 @@
                             <td>
                                 <div style="display: flex; gap: 5px; flex-wrap: wrap;">
                                     <a href="{{ route('admin.questions.edit-question', $question->id) }}" class="btn btn-primary btn-sm" title="Edit">
-                                        ✏️
+                                        <i class="fas fa-edit"></i>
                                     </a>
                                     <a href="#" onclick="toggleQuestion({{ $question->id }})" class="btn btn-warning btn-sm" title="{{ $question->is_active ? 'Nonaktifkan' : 'Aktifkan' }}">
-                                        {{ $question->is_active ? '🔒' : '🔓' }}
+                                        <i class="fas {{ $question->is_active ? 'fa-lock' : 'fa-unlock' }}"></i>
                                     </a>
                                     <a href="#" onclick="deleteQuestion({{ $question->id }}, '{{ addslashes($question->question_text) }}')" class="btn btn-danger btn-sm" title="Hapus">
-                                        🗑️
+                                        <i class="fas fa-trash"></i>
                                     </a>
                                 </div>
                             </td>
@@ -325,12 +326,12 @@
                 </table>
             @else
                 <div class="empty-state">
-                    <div class="empty-icon">❓</div>
+                    <div class="empty-icon"><i class="fas fa-question-circle"></i></div>
                     <h4>Belum Ada Pertanyaan</h4>
                     <p>Bagian ini belum memiliki pertanyaan. Klik tombol "Tambah Pertanyaan" untuk menambahkan pertanyaan pertama.</p>
                     <br>
                     <a href="{{ route('admin.questions.create-question', $section->id) }}" class="btn btn-primary">
-                        ➕ Tambah Pertanyaan Pertama
+                        <i class="fas fa-plus"></i> Tambah Pertanyaan Pertama
                     </a>
                 </div>
             @endif
@@ -339,12 +340,12 @@
     @empty
     <div class="section-card">
         <div class="empty-state">
-            <div class="empty-icon">📝</div>
+            <div class="empty-icon"><i class="fas fa-file-alt"></i></div>
             <h3>Belum Ada Bagian Survei</h3>
             <p>Mulai membuat survei dengan menambahkan bagian pertama. Setiap bagian dapat berisi beberapa pertanyaan yang akan ditampilkan pada halaman yang sama.</p>
             <br>
             <a href="{{ route('admin.questions.create-section') }}" class="btn btn-primary">
-                ➕ Tambahkan Bagian Pertama
+                <i class="fas fa-plus"></i> Tambahkan Bagian Pertama
             </a>
         </div>
     </div>

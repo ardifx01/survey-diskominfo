@@ -31,7 +31,7 @@
             position: fixed;
             top: 20px;
             left: 20px;
-            z-index: 1001;
+            z-index: 999;
             background: #2c3e50;
             color: white;
             border: none;
@@ -41,14 +41,20 @@
             font-size: 18px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
             transition: all 0.3s ease;
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1);
         }
 
         .mobile-menu-toggle:hover {
             background: #34495e;
         }
 
-        .mobile-menu-toggle.active {
-            background: #5a9b9e;
+        .mobile-menu-toggle.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.5);
+            pointer-events: none;
         }
 
         /* Mobile Overlay */
@@ -60,7 +66,7 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-            z-index: 999;
+            z-index: 998;
             opacity: 0;
             transition: opacity 0.3s ease;
         }
@@ -279,7 +285,6 @@
 
             .content-header {
                 padding: 20px;
-                padding-left: 80px;
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
