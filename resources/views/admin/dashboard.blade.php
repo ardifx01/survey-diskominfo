@@ -1,127 +1,18 @@
 {{-- resources/views/admin/dashboard.blade.php --}}
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin - Survei Kepuasan Diskominfo Lamongan')
+@section('title', 'Dashboard Pertanyaan - Admin Survei')
 @section('active-dashboard', 'active')
-@section('page-title', 'Dashboard Pertanyaan & Jawaban')
-@section('page-subtitle', 'Lihat semua pertanyaan dan jawaban responden')
-
-@section('header-actions')
-<div class="header-actions">
-    <span class="admin-welcome">Selamat datang, {{ session('admin_name') }}</span>
-</div>
-@endsection
+@section('page-title', 'Analisis Jawaban')
+@section('page-subtitle', 'Analisis jawaban per pertanyaan survei')
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
 <style>
-    /* Action Buttons */
-    .action-buttons {
-        margin-bottom: 30px;
-        display: flex;
-        gap: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-
-    .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        border: none;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        font-size: 16px;
-    }
-
-    .btn-primary {
-        background: #5a9b9e;
-        color: white;
-    }
-
-    .btn-primary:hover {
-        background: #4a8b8e;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
-    }
-
-    .btn-success {
-        background: #28a745;
-        color: white;
-    }
-
-    .btn-success:hover {
-        background: #218838;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
-    }
-
-    .btn-warning {
-        background: #ffc107;
-        color: #212529;
-    }
-
-    .btn-warning:hover {
-        background: #e0a800;
-        transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
-    }
-
-    /* Summary Stats */
-    .summary-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 20px;
-        margin-bottom: 40px;
-        text-align: center;
-    }
-
-    .summary-card {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        border-left: 4px solid #5a9b9e;
-    }
-
-    .summary-number {
-        font-size: 36px;
-        font-weight: 700;
-        color: #5a9b9e;
-        margin-bottom: 8px;
-    }
-
-    .summary-label {
-        font-size: 14px;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
+    /* Tab Navigation - Remove this section since tabs moved to sidebar */
 
     /* Question Cards */
-    .questions-section {
-        margin-bottom: 40px;
-    }
-
-    .section-title {
-        font-size: 28px;
-        font-weight: 700;
-        color: #2c3e50;
-        margin-bottom: 10px;
-        text-align: center;
-    }
-
-    .section-subtitle {
-        font-size: 16px;
-        color: #7f8c8d;
-        text-align: center;
-        margin-bottom: 40px;
-    }
-
     .question-card {
         background: white;
         border-radius: 15px;
@@ -194,6 +85,13 @@
         margin-top: 5px;
     }
 
+    /* Chart Container */
+    .chart-container {
+        position: relative;
+        height: 300px;
+        margin-bottom: 20px;
+    }
+
     /* Response Statistics Styles */
     .response-stats {
         display: grid;
@@ -233,6 +131,12 @@
         margin-left: 15px;
         min-width: 50px;
         text-align: center;
+    }
+
+    .response-percentage {
+        font-size: 12px;
+        color: #7f8c8d;
+        margin-left: 10px;
     }
 
     /* Scale Statistics */
@@ -403,21 +307,21 @@
         margin: 40px 0;
     }
 
-    .admin-welcome {
-        font-size: 14px;
-        color: #7f8c8d;
+    .show-more-info {
+        background: #e8f4f8;
+        border: 1px solid #bee5eb;
+        border-radius: 8px;
+        padding: 15px;
+        margin-top: 20px;
+        text-align: center;
     }
 
-    @media (max-width: 768px) {
-        .action-buttons {
-            flex-direction: column;
-            align-items: center;
-        }
+    .show-more-info small {
+        color: #5a9b9e;
+        font-weight: 600;
+    }
 
-        .summary-stats {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        }
-
+            @media (max-width: 768px) {
         .question-header {
             padding: 20px;
         }
@@ -452,49 +356,17 @@
         .response-count {
             margin-left: 0;
         }
+
+        .chart-container {
+            height: 250px;
+        }
     }
 </style>
 @endpush
 
 @section('content')
-<!-- Action Buttons -->
-<div class="action-buttons">
-    <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
-        <i class="fas fa-cog"></i>
-        Kelola Pertanyaan
-    </a>
-    <a href="{{ route('survey.index') }}" class="btn btn-success">
-        <i class="fas fa-eye"></i>
-        Preview Survei
-    </a>
-    <a href="{{ route('admin.export') }}" class="btn btn-warning">
-        <i class="fas fa-download"></i>
-        Export Data
-    </a>
-</div>
-
-<!-- Summary Statistics -->
-<div class="summary-stats">
-    <div class="summary-card">
-        <div class="summary-number">{{ $questions->count() }}</div>
-        <div class="summary-label">Total Pertanyaan</div>
-    </div>
-    <div class="summary-card">
-        <div class="summary-number">{{ $totalSurveys }}</div>
-        <div class="summary-label">Total Responden</div>
-    </div>
-    <div class="summary-card">
-        <div class="summary-number">{{ collect($questionStats)->sum('total_responses') }}</div>
-        <div class="summary-label">Total Jawaban</div>
-    </div>
-</div>
-
 <!-- Questions & Answers Section -->
 @if($questions->count() > 0)
-<div class="questions-section">
-    <h1 class="section-title"><i class="fas fa-question-circle"></i> Pertanyaan & Jawaban Survei</h1>
-    <p class="section-subtitle">Lihat semua pertanyaan yang Anda buat beserta jawaban dari responden</p>
-    
     @foreach($questionStats as $stat)
     <div class="question-card">
         <div class="question-header">
@@ -528,28 +400,43 @@
             @if($stat['total_responses'] > 0)
                 @if(in_array($stat['question']->question_type, ['multiple_choice', 'dropdown']))
                     <!-- Multiple Choice / Dropdown Responses -->
+                    <div class="chart-container">
+                        <canvas id="chart_{{ $stat['question']->id }}"></canvas>
+                    </div>
                     <div class="response-stats">
                         @foreach($stat['response_data'] as $response)
                             <div class="response-item">
                                 <span class="response-text">{{ $response->answer }}</span>
-                                <span class="response-count">{{ $response->count }}</span>
+                                <div>
+                                    <span class="response-count">{{ $response->count }}</span>
+                                    <span class="response-percentage">({{ number_format(($response->count / $stat['total_responses']) * 100, 1) }}%)</span>
+                                </div>
                             </div>
                         @endforeach
                     </div>
 
                 @elseif($stat['question']->question_type === 'checkbox')
                     <!-- Checkbox Responses -->
+                    <div class="chart-container">
+                        <canvas id="chart_{{ $stat['question']->id }}"></canvas>
+                    </div>
                     <div class="response-stats">
                         @foreach($stat['response_data'] as $response)
                             <div class="response-item">
                                 <span class="response-text">{{ $response->answer }}</span>
-                                <span class="response-count">{{ $response->count }}</span>
+                                <div>
+                                    <span class="response-count">{{ $response->count }}</span>
+                                    <span class="response-percentage">({{ number_format(($response->count / $stat['response_data']->sum('count')) * 100, 1) }}%)</span>
+                                </div>
                             </div>
                         @endforeach
                     </div>
 
                 @elseif($stat['question']->question_type === 'linear_scale')
                     <!-- Linear Scale Responses -->
+                    <div class="chart-container">
+                        <canvas id="chart_{{ $stat['question']->id }}"></canvas>
+                    </div>
                     <div class="scale-stats">
                         <div class="scale-average">{{ $stat['response_data']['average'] ?? 0 }}</div>
                         <div class="scale-label">Rata-rata dari {{ $stat['response_data']['total_responses'] ?? 0 }} jawaban</div>
@@ -557,7 +444,7 @@
                         @if(isset($stat['response_data']['distribution']))
                         <div class="scale-distribution">
                             @for($i = ($stat['question']->settings['scale_min'] ?? 1); $i <= ($stat['question']->settings['scale_max'] ?? 5); $i++)
-                                <div class="scale-item {{ isset($stat['response_data']['distribution'][$i]) ? 'active' : '' }}">
+                                <div class="scale-item {{ isset($stat['response_data']['distribution'][$i]) && $stat['response_data']['distribution'][$i] > 0 ? 'active' : '' }}">
                                     <span class="scale-number">{{ $i }}</span>
                                     <div class="scale-count">{{ $stat['response_data']['distribution'][$i] ?? 0 }} orang</div>
                                 </div>
@@ -569,15 +456,15 @@
                 @elseif(in_array($stat['question']->question_type, ['short_text', 'long_text']))
                     <!-- Text Responses -->
                     <div class="text-responses">
-                        @foreach($stat['response_data'] as $response)
+                        @foreach($stat['response_data']->take(5) as $response)
                             <div class="text-response">
                                 {{ Str::limit($response, 200) }}
                             </div>
                         @endforeach
                         
-                        @if($stat['response_data']->count() >= 5)
-                            <div style="text-align: center; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px;">
-                                <small style="color: #5a9b9e; font-weight: 600;">
+                        @if($stat['response_data']->count() > 5)
+                            <div class="show-more-info">
+                                <small>
                                     <i class="fas fa-info-circle"></i>
                                     Menampilkan 5 jawaban terbaru dari {{ $stat['total_responses'] }} total jawaban
                                 </small>
@@ -609,7 +496,6 @@
         </div>
     </div>
     @endforeach
-</div>
 @else
 <div class="no-questions-state">
     <div class="empty-state">
@@ -626,26 +512,106 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Auto hide success message
-        const successMessage = document.querySelector('.success-message');
-        if (successMessage) {
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
-        }
+    // Chart.js Configuration
+    Chart.defaults.font.family = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+    Chart.defaults.color = '#2c3e50';
 
-        // Add smooth scroll to question cards
-        const questionCards = document.querySelectorAll('.question-card');
-        questionCards.forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-5px)';
+    // Color Palette
+    const colors = ['#5a9b9e', '#28a745', '#ffc107', '#dc3545', '#17a2b8', '#6f42c1', '#fd7e14', '#20c997'];
+
+    // Render charts for each question
+    @foreach($questionStats as $stat)
+        @if($stat['total_responses'] > 0 && in_array($stat['question']->question_type, ['multiple_choice', 'dropdown', 'checkbox']))
+            // Chart for question {{ $stat['question']->id }}
+            const ctx{{ $stat['question']->id }} = document.getElementById('chart_{{ $stat['question']->id }}').getContext('2d');
+            new Chart(ctx{{ $stat['question']->id }}, {
+                type: '{{ $stat['question']->question_type === 'checkbox' ? 'bar' : 'doughnut' }}',
+                data: {
+                    labels: @json($stat['response_data']->pluck('answer')),
+                    datasets: [{
+                        data: @json($stat['response_data']->pluck('count')),
+                        backgroundColor: colors,
+                        @if($stat['question']->question_type !== 'checkbox')
+                        borderWidth: 2,
+                        borderColor: '#ffffff'
+                        @else
+                        borderRadius: 8,
+                        borderSkipped: false,
+                        @endif
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            @if($stat['question']->question_type === 'checkbox')
+                            display: false
+                            @else
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true,
+                                font: { size: 12 }
+                            }
+                            @endif
+                        }
+                    },
+                    @if($stat['question']->question_type === 'checkbox')
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e9ecef' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                    @else
+                    cutout: '50%'
+                    @endif
+                }
             });
+        @elseif($stat['total_responses'] > 0 && $stat['question']->question_type === 'linear_scale' && isset($stat['response_data']['distribution']))
+            // Linear Scale Chart for question {{ $stat['question']->id }}
+            const ctx{{ $stat['question']->id }} = document.getElementById('chart_{{ $stat['question']->id }}').getContext('2d');
+            const scaleLabels = [];
+            const scaleData = [];
+            @for($i = ($stat['question']->settings['scale_min'] ?? 1); $i <= ($stat['question']->settings['scale_max'] ?? 5); $i++)
+                scaleLabels.push('{{ $i }}');
+                scaleData.push({{ $stat['response_data']['distribution'][$i] ?? 0 }});
+            @endfor
             
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0)';
+            new Chart(ctx{{ $stat['question']->id }}, {
+                type: 'bar',
+                data: {
+                    labels: scaleLabels,
+                    datasets: [{
+                        label: 'Jumlah Responden',
+                        data: scaleData,
+                        backgroundColor: '#5a9b9e',
+                        borderRadius: 8,
+                        borderSkipped: false,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#e9ecef' }
+                        },
+                        x: {
+                            grid: { display: false }
+                        }
+                    }
+                }
             });
-        });
-    });
+        @endif
+    @endforeach
 </script>
 @endpush

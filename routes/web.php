@@ -45,6 +45,8 @@ Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
     Route::post('/section/{sectionId}/questions/reorder', [SurveyQuestionController::class, 'updateQuestionOrder'])->name('reorder-questions');
 });
 
+Route::get('/admin/survey/{id}/detail', [AdminController::class, 'getSurveyDetail'])->name('admin.surveyDetail');
+
 // Dynamic Survey Routes (Optional - for future use if needed)
 Route::get('/dynamic-survey', [DynamicSurveyController::class, 'index'])->name('dynamic-survey.index');
 Route::post('/dynamic-survey', [DynamicSurveyController::class, 'store'])->name('dynamic-survey.store');

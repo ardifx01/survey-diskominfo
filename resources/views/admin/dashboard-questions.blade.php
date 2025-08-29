@@ -1,4 +1,4 @@
-{{-- resources/views/admin/dashboard-questions.blade.php --}}
+{{-- resources/views/admin/dashboard-questions.blade.php
 @extends('layouts.admin')
 
 @section('title', 'Dashboard Pertanyaan - Admin Survei')
@@ -367,7 +367,7 @@
         font-weight: 600;
     }
 
-            @media (max-width: 768px) {
+    @media (max-width: 768px) {
         .tab-nav {
             flex-direction: column;
         }
@@ -375,10 +375,6 @@
         .tab-item {
             border-right: none;
             border-bottom: 1px solid #e9ecef;
-        }
-
-        .tab-item:last-child {
-            border-bottom: none;
         }
 
         .question-header {
@@ -687,4 +683,4 @@
         @endif
     @endforeach
 </script>
-@endpush
+@endpush --}}

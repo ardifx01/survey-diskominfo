@@ -65,100 +65,124 @@ class AdminController extends Controller
 
     private function getQuestionsData($totalSurveys, $questions)
     {
-        // Statistik jawaban per pertanyaan
-        $questionStats = [];
-        foreach ($questions as $question) {
-            // Pastikan hanya menghitung responses dari survey yang masih ada
-            $validResponses = $question->responses()->whereHas('survey')->get();
+        // Ambil semua sections beserta pertanyaannya, diurutkan berdasarkan order_index
+        $sections = SurveySection::active()
+                                ->ordered()
+                                ->with(['questions' => function($query) {
+                                    $query->active()->ordered();
+                                }])
+                                ->get();
+
+        // Filter sections yang memiliki pertanyaan aktif
+        $sections = $sections->filter(function($section) {
+            return $section->questions->count() > 0;
+        });
+
+        $sectionStats = [];
+        
+        foreach ($sections as $section) {
+            $sectionQuestionStats = [];
             
-            $stats = [
-                'question' => $question,
-                'total_responses' => $validResponses->count(),
-                'response_data' => []
-            ];
+            foreach ($section->questions as $question) {
+                // Pastikan hanya menghitung responses dari survey yang masih ada
+                $validResponses = $question->responses()->whereHas('survey')->get();
+                
+                $stats = [
+                    'question' => $question,
+                    'total_responses' => $validResponses->count(),
+                    'response_data' => []
+                ];
 
-            if (in_array($question->question_type, ['multiple_choice', 'dropdown'])) {
-                // Untuk pilihan ganda dan dropdown
-                $responseCounts = $question->responses()
-                    ->whereHas('survey')
-                    ->select('answer', DB::raw('count(*) as count'))
-                    ->groupBy('answer')
-                    ->orderBy('count', 'desc')
-                    ->get();
-                
-                $stats['response_data'] = $responseCounts;
-                
-            } elseif ($question->question_type === 'checkbox') {
-                // Untuk checkbox
-                $allAnswers = [];
-                foreach ($validResponses as $response) {
-                    if ($response->answer_data && is_array($response->answer_data)) {
-                        $allAnswers = array_merge($allAnswers, $response->answer_data);
-                    } elseif ($response->answer) {
-                        $answers = explode(', ', $response->answer);
-                        $allAnswers = array_merge($allAnswers, $answers);
+                if (in_array($question->question_type, ['multiple_choice', 'dropdown'])) {
+                    // Untuk pilihan ganda dan dropdown
+                    $responseCounts = $question->responses()
+                        ->whereHas('survey')
+                        ->select('answer', DB::raw('count(*) as count'))
+                        ->groupBy('answer')
+                        ->orderBy('count', 'desc')
+                        ->get();
+                    
+                    $stats['response_data'] = $responseCounts;
+                    
+                } elseif ($question->question_type === 'checkbox') {
+                    // Untuk checkbox
+                    $allAnswers = [];
+                    foreach ($validResponses as $response) {
+                        if ($response->answer_data && is_array($response->answer_data)) {
+                            $allAnswers = array_merge($allAnswers, $response->answer_data);
+                        } elseif ($response->answer) {
+                            $answers = explode(', ', $response->answer);
+                            $allAnswers = array_merge($allAnswers, $answers);
+                        }
                     }
+                    
+                    $answerCounts = array_count_values($allAnswers);
+                    arsort($answerCounts);
+                    
+                    $stats['response_data'] = collect($answerCounts)->map(function($count, $answer) {
+                        return (object)['answer' => $answer, 'count' => $count];
+                    });
+                    
+                } elseif ($question->question_type === 'linear_scale') {
+                    // Untuk skala linier
+                    $responses = $question->responses()->whereHas('survey')->pluck('answer')->filter()->map(function($item) {
+                        return (int) $item;
+                    });
+                    
+                    if ($responses->count() > 0) {
+                        $distribution = $responses->countBy()->sort();
+                        $stats['response_data'] = [
+                            'average' => round($responses->avg(), 2),
+                            'total_responses' => $responses->count(),
+                            'distribution' => $distribution
+                        ];
+                    }
+                    
+                } elseif (in_array($question->question_type, ['short_text', 'long_text'])) {
+                    // Untuk jawaban teks
+                    $sampleResponses = $question->responses()
+                        ->whereHas('survey')
+                        ->whereNotNull('answer')
+                        ->where('answer', '!=', '')
+                        ->latest()
+                        ->take(5)
+                        ->pluck('answer');
+                    
+                    $stats['response_data'] = $sampleResponses;
+                    
+                } elseif ($question->question_type === 'file_upload') {
+                    // Untuk file upload
+                    $fileResponses = $question->responses()
+                        ->whereHas('survey')
+                        ->whereNotNull('answer_data')
+                        ->latest()
+                        ->take(10)
+                        ->get();
+                    
+                    $stats['response_data'] = $fileResponses->map(function($response) {
+                        return [
+                            'filename' => $response->answer,
+                            'upload_date' => $response->created_at,
+                            'file_data' => $response->answer_data
+                        ];
+                    });
                 }
-                
-                $answerCounts = array_count_values($allAnswers);
-                arsort($answerCounts);
-                
-                $stats['response_data'] = collect($answerCounts)->map(function($count, $answer) {
-                    return (object)['answer' => $answer, 'count' => $count];
-                });
-                
-            } elseif ($question->question_type === 'linear_scale') {
-                // Untuk skala linier
-                $responses = $question->responses()->whereHas('survey')->pluck('answer')->filter()->map(function($item) {
-                    return (int) $item;
-                });
-                
-                if ($responses->count() > 0) {
-                    $distribution = $responses->countBy()->sort();
-                    $stats['response_data'] = [
-                        'average' => round($responses->avg(), 2),
-                        'total_responses' => $responses->count(),
-                        'distribution' => $distribution
-                    ];
-                }
-                
-            } elseif (in_array($question->question_type, ['short_text', 'long_text'])) {
-                // Untuk jawaban teks
-                $sampleResponses = $question->responses()
-                    ->whereHas('survey')
-                    ->whereNotNull('answer')
-                    ->where('answer', '!=', '')
-                    ->latest()
-                    ->take(5)
-                    ->pluck('answer');
-                
-                $stats['response_data'] = $sampleResponses;
-                
-            } elseif ($question->question_type === 'file_upload') {
-                // Untuk file upload
-                $fileResponses = $question->responses()
-                    ->whereHas('survey')
-                    ->whereNotNull('answer_data')
-                    ->latest()
-                    ->take(10)
-                    ->get();
-                
-                $stats['response_data'] = $fileResponses->map(function($response) {
-                    return [
-                        'filename' => $response->answer,
-                        'upload_date' => $response->created_at,
-                        'file_data' => $response->answer_data
-                    ];
-                });
-            }
 
-            $questionStats[] = $stats;
+                $sectionQuestionStats[] = $stats;
+            }
+            
+            $sectionStats[] = [
+                'section' => $section,
+                'questions_stats' => $sectionQuestionStats,
+                'total_questions' => $section->questions->count(),
+                'total_responses' => collect($sectionQuestionStats)->sum('total_responses')
+            ];
         }
 
-        return view('admin.dashboard-questions', compact(
+        return view('admin.dashboard-sections', compact(
             'totalSurveys',
             'questions',
-            'questionStats'
+            'sectionStats'
         ));
     }
 

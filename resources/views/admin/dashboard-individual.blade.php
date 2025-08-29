@@ -3,12 +3,105 @@
 
 @section('title', 'Dashboard Individual - Admin Survei')
 @section('active-dashboard', 'active')
-@section('page-title', 'Dashboard Survei')
-@section('page-subtitle', 'Jawaban individual per responden')
+@section('page-title', 'Dashboard Individual')
+@section('page-subtitle', 'Data responden individual')
+
+@section('header-actions')
+<div class="header-actions">
+    <span class="admin-welcome">Selamat datang, {{ session('admin_name') }}</span>
+</div>
+@endsection
 
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
+    /* Action Buttons */
+    .action-buttons {
+        margin-bottom: 30px;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .btn {
+        padding: 12px 24px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: #5a9b9e;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #4a8b8e;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
+    }
+
+    .btn-success {
+        background: #28a745;
+        color: white;
+    }
+
+    .btn-success:hover {
+        background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+    }
+
+    .btn-warning {
+        background: #ffc107;
+        color: #212529;
+    }
+
+    .btn-warning:hover {
+        background: #e0a800;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+    }
+
+    /* Summary Stats */
+    .summary-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+        text-align: center;
+    }
+
+    .summary-card {
+        background: white;
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        border-left: 4px solid #5a9b9e;
+    }
+
+    .summary-number {
+        font-size: 36px;
+        font-weight: 700;
+        color: #5a9b9e;
+        margin-bottom: 8px;
+    }
+
+    .summary-label {
+        font-size: 14px;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
     /* Tab Navigation */
     .tab-navigation {
         background: white;
@@ -57,32 +150,33 @@
         font-size: 18px;
     }
 
-    /* Search and Filter */
+    /* Search and Filter Bar */
     .search-filter-bar {
         background: white;
-        padding: 25px 30px;
         border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        padding: 25px;
         margin-bottom: 30px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         display: flex;
-        gap: 20px;
-        align-items: center;
+        gap: 15px;
         flex-wrap: wrap;
+        align-items: center;
     }
 
     .search-input {
         flex: 1;
+        min-width: 250px;
         padding: 12px 18px;
         border: 2px solid #e9ecef;
         border-radius: 8px;
         font-size: 16px;
-        min-width: 250px;
         transition: border-color 0.3s ease;
     }
 
     .search-input:focus {
         outline: none;
         border-color: #5a9b9e;
+        box-shadow: 0 0 0 3px rgba(90, 155, 158, 0.1);
     }
 
     .filter-select {
@@ -90,27 +184,38 @@
         border: 2px solid #e9ecef;
         border-radius: 8px;
         font-size: 14px;
+        color: #495057;
         background: white;
-        min-width: 150px;
+        cursor: pointer;
+        transition: border-color 0.3s ease;
+    }
+
+    .filter-select:focus {
+        outline: none;
+        border-color: #5a9b9e;
+        box-shadow: 0 0 0 3px rgba(90, 155, 158, 0.1);
     }
 
     .search-btn {
-        padding: 12px 20px;
-        background: #5a9b9e;
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
         color: white;
         border: none;
+        padding: 12px 20px;
         border-radius: 8px;
-        cursor: pointer;
         font-weight: 600;
+        cursor: pointer;
         transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
     }
 
     .search-btn:hover {
-        background: #4a8b8e;
         transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
     }
 
-    /* Individual Response Cards */
+    /* Response Cards */
     .response-card {
         background: white;
         border-radius: 15px;
@@ -122,220 +227,209 @@
 
     .response-card:hover {
         transform: translateY(-3px);
-        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
     }
 
     .response-header {
         background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
         color: white;
-        padding: 20px 25px;
+        padding: 25px 30px;
         display: flex;
-        justify-content: space-between;
         align-items: center;
     }
 
-    .respondent-info {
-        display: flex;
-        align-items: center;
-        gap: 15px;
-    }
-
-    .respondent-avatar {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.2);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+    .respondent-details h4 {
+        margin: 0 0 8px 0;
         font-size: 20px;
         font-weight: 700;
     }
 
-    .respondent-details h4 {
-        font-size: 18px;
-        font-weight: 600;
-        margin-bottom: 5px;
-    }
-
     .respondent-meta {
+        display: flex;
+        gap: 20px;
         font-size: 14px;
         opacity: 0.9;
+        flex-wrap: wrap;
     }
 
-    .response-actions {
+    .respondent-meta span {
         display: flex;
-        gap: 10px;
-    }
-
-    .btn-action {
-        padding: 8px 12px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
-        border-radius: 6px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        font-size: 12px;
-        text-decoration: none;
-    }
-
-    .btn-action:hover {
-        background: rgba(255, 255, 255, 0.2);
-        color: white;
+        align-items: center;
+        gap: 5px;
     }
 
     .response-body {
-        padding: 25px;
+        padding: 30px;
     }
 
-    .answers-grid {
+    .response-summary {
         display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
+        margin-bottom: 25px;
     }
 
-    .answer-item {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
+    .summary-item {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 20px;
+        border-radius: 10px;
         border-left: 4px solid #5a9b9e;
+        text-align: center;
     }
 
-    .question-text {
-        font-weight: 600;
-        color: #2c3e50;
+    .summary-value {
+        font-size: 28px;
+        font-weight: 700;
+        color: #5a9b9e;
+        margin-bottom: 5px;
+    }
+
+    .summary-title {
         font-size: 14px;
-        line-height: 1.4;
-    }
-
-    .answer-text {
-        color: #495057;
-        font-size: 16px;
-        line-height: 1.5;
-    }
-
-    .answer-text.empty {
-        color: #7f8c8d;
-        font-style: italic;
-    }
-
-    .question-type {
-        font-size: 11px;
         color: #7f8c8d;
         text-transform: uppercase;
         letter-spacing: 0.5px;
     }
 
-    /* File Answer Styling */
-    .file-answer {
+    .response-actions {
         display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px;
-        background: #e8f5e8;
+        gap: 15px;
+        justify-content: flex-end;
+        padding-top: 20px;
+        border-top: 1px solid #e9ecef;
+    }
+
+    .action-btn {
+        padding: 10px 18px;
+        border: none;
         border-radius: 6px;
-        color: #2e7d32;
-    }
-
-    .file-answer i {
-        font-size: 18px;
-    }
-
-    /* Scale Answer Styling */
-    .scale-answer {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-    }
-
-    .scale-value {
-        background: #5a9b9e;
-        color: white;
-        padding: 5px 12px;
-        border-radius: 50%;
-        font-weight: 700;
-        min-width: 35px;
-        text-align: center;
-    }
-
-    .scale-labels {
-        font-size: 12px;
-        color: #7f8c8d;
-    }
-
-    /* Pagination */
-    .pagination-container {
-        display: flex;
-        justify-content: center;
-        margin-top: 40px;
-    }
-
-    .pagination {
-        display: flex;
-        gap: 5px;
-        align-items: center;
-    }
-
-    .pagination a,
-    .pagination span {
-        padding: 10px 15px;
-        border: 1px solid #e9ecef;
-        color: #6c757d;
-        text-decoration: none;
-        border-radius: 6px;
+        font-weight: 600;
+        cursor: pointer;
         transition: all 0.3s ease;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
     }
 
-    .pagination a:hover {
-        background: #5a9b9e;
+    .detail-btn {
+        background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
         color: white;
-        border-color: #5a9b9e;
     }
 
-    .pagination .active span {
-        background: #5a9b9e;
+    .detail-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(23, 162, 184, 0.3);
+    }
+
+    .delete-btn {
+        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
         color: white;
-        border-color: #5a9b9e;
     }
 
-    .pagination .disabled span {
-        color: #ccc;
-        cursor: not-allowed;
+    .delete-btn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
     }
 
     /* Empty State */
     .empty-state {
         text-align: center;
-        padding: 60px 20px;
-        color: #7f8c8d;
+        padding: 80px 20px;
         background: white;
         border-radius: 15px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        margin: 40px 0;
     }
 
     .empty-state i {
-        font-size: 48px;
-        margin-bottom: 20px;
-        opacity: 0.5;
-    }
-
-    .empty-state h3 {
-        font-size: 24px;
-        margin-bottom: 15px;
-        color: #2c3e50;
-    }
-
-    .empty-state p {
-        font-size: 16px;
-        line-height: 1.6;
+        font-size: 64px;
+        color: #e9ecef;
         margin-bottom: 25px;
     }
 
+    .empty-state h3 {
+        font-size: 28px;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+
+    .empty-state p {
+        font-size: 18px;
+        color: #7f8c8d;
+        line-height: 1.6;
+        margin-bottom: 30px;
+    }
+
+    /* Pagination */
+    .pagination-wrapper {
+        margin-top: 40px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .pagination {
+        display: flex;
+        gap: 5px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .page-item {
+        border-radius: 6px;
+        overflow: hidden;
+    }
+
+    .page-link {
+        display: block;
+        padding: 12px 16px;
+        color: #5a9b9e;
+        text-decoration: none;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+    }
+
+    .page-link:hover {
+        background: #5a9b9e;
+        color: white;
+        border-color: #5a9b9e;
+    }
+
+    .page-item.active .page-link {
+        background: #5a9b9e;
+        color: white;
+        border-color: #5a9b9e;
+    }
+
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        background: #f8f9fa;
+        border-color: #e9ecef;
+        cursor: not-allowed;
+    }
+
     /* Responsive */
-            @media (max-width: 768px) {
+    @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .summary-stats {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .search-filter-bar {
+            flex-direction: column;
+            align-items: stretch;
+        }
+
+        .search-input {
+            min-width: auto;
+        }
+
         .tab-nav {
             flex-direction: column;
         }
@@ -349,39 +443,147 @@
             border-bottom: none;
         }
 
-        .search-filter-bar {
-            flex-direction: column;
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .search-input {
-            min-width: 100%;
-        }
-
         .response-header {
             flex-direction: column;
-            gap: 15px;
             text-align: center;
-            padding: 20px;
+            gap: 15px;
         }
 
-        .respondent-info {
+        .respondent-meta {
             justify-content: center;
         }
 
-        .response-body {
-            padding: 20px 15px;
+        .response-summary {
+            grid-template-columns: 1fr;
         }
 
-        .answer-item {
-            padding: 12px;
+        .response-actions {
+            flex-direction: column;
+            gap: 10px;
         }
+    }
+
+    /* Detail Modal Styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(5px);
+    }
+
+    .modal-content {
+        background-color: white;
+        margin: 5% auto;
+        padding: 0;
+        border-radius: 15px;
+        width: 90%;
+        max-width: 700px;
+        max-height: 80vh;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        position: relative;
+    }
+
+    .modal-header {
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        padding: 25px 30px;
+        display: flex;
+        justify-content: between;
+        align-items: center;
+    }
+
+    .modal-title {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0;
+        flex: 1;
+    }
+
+    .close {
+        color: white;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        line-height: 1;
+        opacity: 0.8;
+        transition: opacity 0.3s ease;
+    }
+
+    .close:hover {
+        opacity: 1;
+    }
+
+    .modal-body {
+        padding: 30px;
+        max-height: 60vh;
+        overflow-y: auto;
+    }
+
+    .detail-info {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+        border-left: 4px solid #5a9b9e;
+    }
+
+    .detail-info h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 18px;
+    }
+
+    .detail-info p {
+        color: #7f8c8d;
+        margin: 0;
+        line-height: 1.6;
     }
 </style>
 @endpush
 
 @section('content')
+<!-- Action Buttons -->
+<div class="action-buttons">
+    <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
+        <i class="fas fa-cog"></i>
+        Kelola Pertanyaan
+    </a>
+    <a href="{{ route('survey.index') }}" class="btn btn-success">
+        <i class="fas fa-eye"></i>
+        Preview Survei
+    </a>
+    <a href="{{ route('admin.export') }}" class="btn btn-warning">
+        <i class="fas fa-download"></i>
+        Export Data
+    </a>
+</div>
+
+<!-- Summary Statistics -->
+<div class="summary-stats">
+    <div class="summary-card">
+        <div class="summary-number">{{ $questions->count() }}</div>
+        <div class="summary-label">Total Pertanyaan</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-number">{{ $totalSurveys }}</div>
+        <div class="summary-label">Total Responden</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-number">{{ $surveys->total() }}</div>
+        <div class="summary-label">Total Survei</div>
+    </div>
+    <div class="summary-card">
+        <div class="summary-number">{{ $surveys->sum(function($survey) { return $survey->responses->count(); }) }}</div>
+        <div class="summary-label">Total Jawaban</div>
+    </div>
+</div>
+
 <!-- Tab Navigation -->
 <div class="tab-navigation">
     <div class="tab-nav">
@@ -398,12 +600,7 @@
 
 <!-- Search and Filter Bar -->
 <div class="search-filter-bar">
-    <input type="text" class="search-input" placeholder="🔍 Cari berdasarkan nama, email, atau jawaban..." id="searchInput">
-    <select class="filter-select" id="genderFilter">
-        <option value="">Semua Jenis Kelamin</option>
-        <option value="laki_laki">Laki-laki</option>
-        <option value="perempuan">Perempuan</option>
-    </select>
+    <input type="text" class="search-input" placeholder="🔍 Cari berdasarkan jawaban responden..." id="searchInput">
     <select class="filter-select" id="dateFilter">
         <option value="">Semua Tanggal</option>
         <option value="today">Hari Ini</option>
@@ -421,74 +618,75 @@
         @foreach($surveys as $survey)
         <div class="response-card" data-survey-id="{{ $survey->id }}">
             <div class="response-header">
-                <div class="respondent-info">
-                    <div class="respondent-avatar">
-                        {{ strtoupper(substr($survey->nama, 0, 2)) }}
+                <div class="respondent-details">
+                    <h4>Responden #{{ $survey->id }}</h4>
+                    <div class="respondent-meta">
+                        <span><i class="fas fa-calendar-alt"></i> {{ $survey->created_at->format('d/m/Y H:i') }}</span>
+                        <span><i class="fas fa-globe"></i> {{ $survey->ip_address ?: 'Tidak diketahui' }}</span>
+                        @if($survey->responses->count() > 0)
+                            <span><i class="fas fa-check-circle"></i> {{ $survey->responses->count() }} Jawaban</span>
+                        @else
+                            <span><i class="fas fa-clock"></i> Belum ada jawaban</span>
+                        @endif
                     </div>
-                    <div class="respondent-details">
-                        <h4>{{ $survey->nama }}</h4>
-                        <div class="respondent-meta">
-                            <i class="fas fa-{{ $survey->jenis_kelamin === 'laki_laki' ? 'mars' : 'venus' }}"></i>
-                            {{ $survey->jenis_kelamin_label }} • {{ $survey->usia }} tahun • 
-                            <i class="fas fa-clock"></i> {{ $survey->created_at->format('d/m/Y H:i') }}
-                        </div>
-                    </div>
-                </div>
-                <div class="response-actions">
-                    <a href="#" class="btn-action" onclick="viewDetail({{ $survey->id }})">
-                        <i class="fas fa-eye"></i> Detail
-                    </a>
-                    <a href="#" class="btn-action" onclick="deleteSurvey({{ $survey->id }})">
-                        <i class="fas fa-trash"></i> Hapus
-                    </a>
                 </div>
             </div>
 
             <div class="response-body">
-                <div class="answers-grid">
-                    @forelse($survey->responses->take(5) as $response)
-                        <div class="answer-item">
-                            <div class="question-text">
-                                {{ $response->question->question_text }}
-                                <span class="question-type">({{ $response->question->getQuestionTypeLabel() }})</span>
-                            </div>
-                            
-                            @if($response->question->question_type === 'file_upload' && $response->answer_data)
-                                <div class="file-answer">
-                                    <i class="fas fa-file"></i>
-                                    <span>{{ $response->answer }}</span>
-                                    <small>({{ number_format($response->answer_data['size'] / 1024, 1) }} KB)</small>
-                                </div>
-                            @elseif($response->question->question_type === 'linear_scale')
-                                <div class="scale-answer">
-                                    <div class="scale-value">{{ $response->answer }}</div>
-                                    @if(isset($response->question->settings['scale_min_label']) || isset($response->question->settings['scale_max_label']))
-                                        <div class="scale-labels">
-                                            {{ $response->question->settings['scale_min_label'] ?? '' }} - 
-                                            {{ $response->question->settings['scale_max_label'] ?? '' }}
-                                        </div>
-                                    @endif
-                                </div>
-                            @elseif($response->answer)
-                                <div class="answer-text">{{ Str::limit($response->answer, 150) }}</div>
-                            @else
-                                <div class="answer-text empty">Tidak dijawab</div>
-                            @endif
-                        </div>
-                    @empty
-                        <div class="answer-item">
-                            <div class="answer-text empty">Belum ada jawaban untuk survei ini</div>
-                        </div>
-                    @endforelse
-                    
-                    @if($survey->responses->count() > 5)
-                        <div class="answer-item" style="border-left-color: #17a2b8; background: #e8f4f8;">
-                            <div class="answer-text" style="color: #17a2b8; font-weight: 600;">
-                                <i class="fas fa-plus-circle"></i>
-                                {{ $survey->responses->count() - 5 }} jawaban lainnya. Klik "Detail" untuk melihat semua.
+                <div class="response-summary">
+                    <div class="summary-item">
+                        <div class="summary-value">{{ $survey->responses->count() }}</div>
+                        <div class="summary-title">Total Jawaban</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">{{ $survey->responses->whereNotNull('answer')->where('answer', '!=', '')->count() }}</div>
+                        <div class="summary-title">Jawaban Terisi</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">{{ number_format(($survey->responses->whereNotNull('answer')->where('answer', '!=', '')->count() / max($questions->count(), 1)) * 100, 1) }}%</div>
+                        <div class="summary-title">Tingkat Kelengkapan</div>
+                    </div>
+                    <div class="summary-item">
+                        <div class="summary-value">{{ $survey->responses->where('question.question_type', 'file_upload')->whereNotNull('answer_data')->count() }}</div>
+                        <div class="summary-title">File Diupload</div>
+                    </div>
+                </div>
+
+                <!-- Preview Jawaban (3 pertanyaan pertama) -->
+                @if($survey->responses->count() > 0)
+                <div style="margin-bottom: 20px;">
+                    <h5 style="color: #2c3e50; margin-bottom: 15px; font-size: 16px;">
+                        <i class="fas fa-eye"></i> Preview Jawaban:
+                    </h5>
+                    @foreach($survey->responses->take(3) as $response)
+                        @if($response->question && $response->answer)
+                        <div style="background: #f8f9fa; padding: 12px 15px; margin-bottom: 8px; border-radius: 6px; border-left: 3px solid #5a9b9e;">
+                            <strong style="color: #2c3e50; font-size: 14px;">{{ $response->question->question_text }}</strong>
+                            <div style="color: #495057; font-size: 14px; margin-top: 5px;">
+                                {{ Str::limit($response->answer, 100) }}
                             </div>
                         </div>
+                        @endif
+                    @endforeach
+                    @if($survey->responses->count() > 3)
+                        <small style="color: #7f8c8d; font-style: italic;">
+                            <i class="fas fa-plus-circle"></i> Dan {{ $survey->responses->count() - 3 }} jawaban lainnya...
+                        </small>
                     @endif
+                </div>
+                @endif
+
+                <div class="response-actions">
+                    <button class="action-btn detail-btn" onclick="showDetailModal({{ $survey->id }})">
+                        <i class="fas fa-eye"></i> Lihat Detail
+                    </button>
+                    <form method="POST" action="{{ route('admin.deleteSurvey', $survey->id) }}" style="display: inline;" onsubmit="return confirm('Yakin ingin menghapus data survei ini?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="action-btn delete-btn">
+                            <i class="fas fa-trash"></i> Hapus
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -496,29 +694,28 @@
     </div>
 
     <!-- Pagination -->
-    <div class="pagination-container">
-        {{ $surveys->appends(request()->query())->links('custom-pagination') }}
+    <div class="pagination-wrapper">
+        {{ $surveys->appends(request()->query())->links() }}
     </div>
-
 @else
     <div class="empty-state">
         <i class="fas fa-users"></i>
         <h3>Belum Ada Responden</h3>
-        <p>Belum ada yang mengisi survei. Bagikan link survei kepada target responden untuk mulai mengumpulkan data.</p>
-        <a href="{{ route('survey.index') }}" class="btn btn-primary" style="margin-top: 20px;">
-            <i class="fas fa-share"></i> Lihat Link Survei
+        <p>Belum ada responden yang mengisi survei Anda. Bagikan link survei untuk mulai mengumpulkan data responden.</p>
+        <a href="{{ route('survey.index') }}" class="btn btn-primary">
+            <i class="fas fa-external-link-alt"></i> Buka Survei
         </a>
     </div>
 @endif
 
 <!-- Detail Modal -->
-<div id="detailModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 1000; overflow-y: auto;">
-    <div style="max-width: 800px; margin: 50px auto; background: white; border-radius: 15px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%); color: white; padding: 25px 30px; display: flex; justify-content: space-between; align-items: center;">
-            <h3><i class="fas fa-user"></i> Detail Responden</h3>
-            <button onclick="closeDetail()" style="background: none; border: none; color: white; font-size: 24px; cursor: pointer;">&times;</button>
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 class="modal-title">Detail Responden</h2>
+            <span class="close" onclick="closeDetailModal()">&times;</span>
         </div>
-        <div id="detailContent" style="padding: 30px; max-height: 600px; overflow-y: auto;">
+        <div class="modal-body" id="modalBody">
             <!-- Content will be loaded here -->
         </div>
     </div>
@@ -527,114 +724,206 @@
 
 @push('scripts')
 <script>
-    // Search and Filter Functions
     function filterResponses() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-        const genderFilter = document.getElementById('genderFilter').value;
         const dateFilter = document.getElementById('dateFilter').value;
-        
         const responseCards = document.querySelectorAll('.response-card');
-        
+
         responseCards.forEach(card => {
-            const surveyText = card.textContent.toLowerCase();
             const surveyId = card.dataset.surveyId;
+            const cardText = card.textContent.toLowerCase();
+            const cardDate = card.querySelector('.respondent-meta span').textContent;
             
             let showCard = true;
-            
-            // Text search
-            if (searchTerm && !surveyText.includes(searchTerm)) {
+
+            // Search filter
+            if (searchTerm && !cardText.includes(searchTerm)) {
                 showCard = false;
             }
-            
-            // Gender filter
-            if (genderFilter) {
-                const genderIcon = card.querySelector('.fa-mars, .fa-venus');
-                const isLakiLaki = genderIcon && genderIcon.classList.contains('fa-mars');
-                if (genderFilter === 'laki_laki' && !isLakiLaki) showCard = false;
-                if (genderFilter === 'perempuan' && isLakiLaki) showCard = false;
+
+            // Date filter logic could be implemented here
+            // This is a simplified version
+            if (dateFilter && dateFilter !== '') {
+                // Implement date filtering logic based on your needs
             }
-            
-            // Date filter (basic implementation)
-            // Note: For production, this should be handled server-side
-            
+
             card.style.display = showCard ? 'block' : 'none';
         });
     }
 
-    // Real-time search
-    document.getElementById('searchInput').addEventListener('input', function() {
-        clearTimeout(this.searchTimeout);
-        this.searchTimeout = setTimeout(filterResponses, 300);
-    });
-
-    // View Detail Function
-    function viewDetail(surveyId) {
+    function showDetailModal(surveyId) {
         const modal = document.getElementById('detailModal');
-        const content = document.getElementById('detailContent');
+        const modalBody = document.getElementById('modalBody');
         
-        content.innerHTML = '<div style="text-align: center; padding: 40px;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; color: #5a9b9e;"></i><br>Memuat data...</div>';
+        // Show loading state
+        modalBody.innerHTML = `
+            <div style="text-align: center; padding: 40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #5a9b9e; margin-bottom: 20px;"></i>
+                <p style="color: #7f8c8d;">Memuat detail responden...</p>
+            </div>
+        `;
+        
         modal.style.display = 'block';
         
-        // Simulate API call (replace with actual AJAX call)
-        setTimeout(() => {
-            // This should be replaced with actual AJAX call to get full survey details
-            content.innerHTML = `
-                <div style="text-align: center; color: #7f8c8d;">
-                    <i class="fas fa-info-circle" style="font-size: 48px; margin-bottom: 20px;"></i>
-                    <h4>Fitur Detail Responden</h4>
-                    <p>Implementasi penuh memerlukan endpoint API untuk mengambil detail lengkap survei ID: ${surveyId}</p>
-                    <p>Fitur ini akan menampilkan semua jawaban responden dalam format yang lebih detail.</p>
-                </div>
-            `;
-        }, 1000);
+        // Fetch survey detail via AJAX
+        fetch(`/admin/survey/${surveyId}/detail`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                let detailHTML = `
+                    <div class="detail-info">
+                        <h4><i class="fas fa-info-circle"></i> Informasi Responden</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                            <div><strong>ID Survei:</strong> #${data.survey.id}</div>
+                            <div><strong>Tanggal:</strong> ${data.survey.created_at}</div>
+                            <div><strong>IP Address:</strong> ${data.survey.ip_address}</div>
+                        </div>
+                    </div>
+                `;
+
+                data.sections.forEach((section, sectionIndex) => {
+                    detailHTML += `
+                        <div class="detail-section" style="margin-bottom: 30px;">
+                            <div style="background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%); color: white; padding: 15px 20px; border-radius: 8px 8px 0 0; margin-bottom: 0;">
+                                <h4 style="margin: 0; display: flex; align-items: center; gap: 10px;">
+                                    <i class="fas fa-layer-group"></i>
+                                    ${section.title}
+                                </h4>
+                                ${section.description ? `<p style="margin: 8px 0 0 0; opacity: 0.9; font-size: 14px;">${section.description}</p>` : ''}
+                            </div>
+                            <div style="border: 1px solid #e9ecef; border-top: none; border-radius: 0 0 8px 8px;">
+                    `;
+
+                    section.responses.forEach((response, responseIndex) => {
+                        const isLast = responseIndex === section.responses.length - 1;
+                        const borderClass = isLast ? '' : 'border-bottom: 1px solid #f8f9fa;';
+                        
+                        detailHTML += `
+                            <div style="padding: 20px; ${borderClass}">
+                                <div style="display: flex; justify-content: between; align-items: flex-start; margin-bottom: 12px;">
+                                    <h5 style="margin: 0; color: #2c3e50; flex: 1; font-size: 16px;">${response.question_text}</h5>
+                                    <div style="display: flex; gap: 10px; align-items: center;">
+                                        <span style="background: #5a9b9e; color: white; padding: 4px 8px; border-radius: 12px; font-size: 11px; text-transform: uppercase;">${response.question_type_label}</span>
+                                        ${response.is_required ? '<span style="color: #dc3545; font-size: 12px;"><i class="fas fa-star"></i> Wajib</span>' : '<span style="color: #6c757d; font-size: 12px;"><i class="fas fa-star-o"></i> Opsional</span>'}
+                                    </div>
+                                </div>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 6px; border-left: 4px solid #5a9b9e;">
+                        `;
+
+                        if (response.answer) {
+                            if (response.question_type === 'linear_scale' && response.scale_info) {
+                                detailHTML += `
+                                    <div style="text-align: center;">
+                                        <div style="font-size: 24px; font-weight: 700; color: #5a9b9e; margin-bottom: 10px;">${response.answer}</div>
+                                        <div style="font-size: 14px; color: #7f8c8d;">
+                                            Skala ${response.scale_info.min} - ${response.scale_info.max}
+                                            ${response.scale_info.min_label || response.scale_info.max_label ? `<br><small>${response.scale_info.min_label} - ${response.scale_info.max_label}</small>` : ''}
+                                        </div>
+                                    </div>
+                                `;
+                            } else if (response.question_type === 'file_upload' && response.file_info) {
+                                detailHTML += `
+                                    <div style="display: flex; align-items: center; gap: 15px;">
+                                        <i class="fas fa-file" style="font-size: 24px; color: #689f38;"></i>
+                                        <div>
+                                            <div style="font-weight: 600; color: #2c3e50;">${response.formatted_answer}</div>
+                                            <div style="font-size: 14px; color: #7f8c8d;">File berhasil diupload</div>
+                                        </div>
+                                    </div>
+                                `;
+                            } else {
+                                detailHTML += `<div style="color: #2c3e50; line-height: 1.5;">${response.formatted_answer}</div>`;
+                            }
+                        } else {
+                            detailHTML += `<div style="color: #dc3545; font-style: italic;"><i class="fas fa-times-circle"></i> Tidak dijawab</div>`;
+                        }
+
+                        detailHTML += `
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    detailHTML += `
+                            </div>
+                        </div>
+                    `;
+                });
+
+                modalBody.innerHTML = detailHTML;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                modalBody.innerHTML = `
+                    <div class="detail-info">
+                        <h4><i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i> Error</h4>
+                        <p style="color: #dc3545;">Terjadi kesalahan saat memuat detail responden. Silakan coba lagi.</p>
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn btn-primary" onclick="closeDetailModal()">
+                                <i class="fas fa-times"></i> Tutup
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
     }
 
-    // Close Detail Modal
-    function closeDetail() {
-        document.getElementById('detailModal').style.display = 'none';
-    }
-
-    // Delete Survey Function
-    function deleteSurvey(surveyId) {
-        if (confirm('Yakin ingin menghapus data responden ini?\n\nData yang dihapus tidak dapat dikembalikan.')) {
-            // Create form and submit
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = `/admin/survey/${surveyId}`;
-            form.innerHTML = `
-                @csrf
-                @method('DELETE')
-            `;
-            document.body.appendChild(form);
-            form.submit();
-        }
+    function closeDetailModal() {
+        const modal = document.getElementById('detailModal');
+        modal.style.display = 'none';
     }
 
     // Close modal when clicking outside
-    document.getElementById('detailModal').addEventListener('click', function(e) {
-        if (e.target === this) {
-            closeDetail();
+    window.onclick = function(event) {
+        const modal = document.getElementById('detailModal');
+        if (event.target === modal) {
+            closeDetailModal();
         }
+    }
+
+    // Auto-hide success messages
+    document.addEventListener('DOMContentLoaded', function() {
+        const successMessage = document.querySelector('.success-message');
+        if (successMessage) {
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Add search on enter key
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                filterResponses();
+            }
+        });
+
+        // Auto filter on date change
+        document.getElementById('dateFilter').addEventListener('change', function() {
+            filterResponses();
+        });
     });
 
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Escape to close modal
-        if (e.key === 'Escape') {
-            closeDetail();
-        }
-        
-        // Ctrl+F to focus search
-        if (e.ctrlKey && e.key === 'f') {
-            e.preventDefault();
-            document.getElementById('searchInput').focus();
-        }
+    // Card animation on scroll
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1
     });
 
-    // Auto-refresh every 30 seconds (optional)
-    setInterval(function() {
-        // You can implement auto-refresh functionality here
-        // window.location.reload();
-    }, 30000);
+    document.querySelectorAll('.response-card').forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(card);
+    });
 </script>
 @endpush
