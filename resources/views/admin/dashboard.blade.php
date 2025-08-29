@@ -3,8 +3,8 @@
 
 @section('title', 'Dashboard Admin - Survei Kepuasan Diskominfo Lamongan')
 @section('active-dashboard', 'active')
-@section('page-title', 'Dashboard Administrator')
-@section('page-subtitle', 'Kelola survei kepuasan masyarakat')
+@section('page-title', 'Dashboard Pertanyaan & Jawaban')
+@section('page-subtitle', 'Lihat semua pertanyaan dan jawaban responden')
 
 @section('header-actions')
 <div class="header-actions">
@@ -13,57 +13,29 @@
 @endsection
 
 @push('styles')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    /* Stats Cards */
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-bottom: 40px;
-    }
-
-    .stat-card {
-        background: white;
-        padding: 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        border-left: 4px solid #5a9b9e;
-    }
-
-    .stat-number {
-        font-size: 32px;
-        font-weight: 700;
-        color: #5a9b9e;
-        margin-bottom: 8px;
-    }
-
-    .stat-label {
-        font-size: 14px;
-        color: #7f8c8d;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-    }
-
     /* Action Buttons */
     .action-buttons {
         margin-bottom: 30px;
         display: flex;
         gap: 15px;
         flex-wrap: wrap;
+        justify-content: center;
     }
 
     .btn {
-        padding: 12px 20px;
+        padding: 12px 24px;
         border-radius: 8px;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
         transition: all 0.3s ease;
         border: none;
         cursor: pointer;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        font-size: 16px;
     }
 
     .btn-primary {
@@ -84,6 +56,8 @@
 
     .btn-success:hover {
         background: #218838;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
     }
 
     .btn-warning {
@@ -93,211 +67,340 @@
 
     .btn-warning:hover {
         background: #e0a800;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
     }
 
-    /* Charts Section */
-    .charts-section {
+    /* Summary Stats */
+    .summary-stats {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 20px;
         margin-bottom: 40px;
+        text-align: center;
     }
 
-    .chart-card {
+    .summary-card {
         background: white;
         padding: 25px;
         border-radius: 12px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .chart-title {
-        font-size: 18px;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-
-    /* Data Table */
-    .data-table {
-        background: white;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        overflow: hidden;
-        margin-bottom: 30px;
-    }
-
-    .table-header {
-        background: #5a9b9e;
-        color: white;
-        padding: 20px 25px;
-        font-size: 18px;
-        font-weight: 600;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .table-container {
-        overflow-x: auto;
-    }
-
-    .table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .table th {
-        background: #f8f9fa;
-        padding: 15px 10px;
-        text-align: left;
-        font-weight: 600;
-        color: #2c3e50;
-        border-bottom: 1px solid #dee2e6;
-        font-size: 14px;
-    }
-
-    .table td {
-        padding: 15px 10px;
-        border-bottom: 1px solid #dee2e6;
-        color: #495057;
-        font-size: 14px;
-    }
-
-    .table tr:hover {
-        background: #f8f9fa;
-    }
-
-    .gender-badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 12px;
-        font-weight: 500;
-    }
-
-    .badge-male {
-        background: #e3f2fd;
-        color: #1976d2;
-    }
-
-    .badge-female {
-        background: #fce4ec;
-        color: #c2185b;
-    }
-
-    .btn-delete {
-        background: #dc3545;
-        color: white;
-        padding: 6px 12px;
-        border-radius: 4px;
-        text-decoration: none;
-        font-size: 12px;
-        font-weight: 500;
-    }
-
-    .btn-delete:hover {
-        background: #c82333;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        gap: 8px;
-        margin-top: 20px;
-    }
-
-    .pagination a, .pagination span {
-        padding: 8px 12px;
-        border: 1px solid #dee2e6;
-        border-radius: 4px;
-        text-decoration: none;
-        color: #495057;
-        font-size: 14px;
-    }
-
-    .pagination .current {
-        background: #5a9b9e;
-        color: white;
-        border-color: #5a9b9e;
-    }
-
-    .pagination a:hover {
-        background: #f8f9fa;
-    }
-
-    .daily-stats {
-        margin-top: 15px;
-    }
-
-    .daily-item {
-        display: flex;
-        justify-content: space-between;
-        padding: 8px 0;
-        border-bottom: 1px solid #f0f0f0;
-    }
-
-    .daily-item:last-child {
-        border-bottom: none;
-    }
-
-    /* Survey Type Switcher */
-    .survey-type-switcher {
-        background: white;
-        padding: 20px 25px;
-        border-radius: 12px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        margin-bottom: 30px;
-    }
-
-    .switch-header {
-        font-size: 16px;
-        font-weight: 600;
-        color: #2c3e50;
-        margin-bottom: 15px;
-    }
-
-    .switch-options {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-    }
-
-    .switch-option {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .switch-option input[type="radio"] {
-        margin: 0;
-    }
-
-    .switch-option label {
-        font-size: 14px;
-        color: #495057;
-        cursor: pointer;
-    }
-
-    .survey-info {
-        margin-top: 15px;
-        padding: 15px;
-        background: #e8f4f8;
-        border-radius: 8px;
         border-left: 4px solid #5a9b9e;
     }
 
-    .info-static {
-        display: block;
+    .summary-number {
+        font-size: 36px;
+        font-weight: 700;
+        color: #5a9b9e;
+        margin-bottom: 8px;
     }
 
-    .info-dynamic {
-        display: none;
+    .summary-label {
+        font-size: 14px;
+        color: #7f8c8d;
+        text-transform: uppercase;
+        letter-spacing: 1px;
     }
 
-    .header-actions {
+    /* Question Cards */
+    .questions-section {
+        margin-bottom: 40px;
+    }
+
+    .section-title {
+        font-size: 28px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+
+    .section-subtitle {
+        font-size: 16px;
+        color: #7f8c8d;
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .question-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        margin-bottom: 30px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .question-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .question-header {
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        padding: 25px 30px;
+    }
+
+    .question-title {
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 10px;
+        line-height: 1.4;
+    }
+
+    .question-meta {
         display: flex;
-        gap: 15px;
+        gap: 20px;
         align-items: center;
+        font-size: 14px;
+        opacity: 0.9;
+        flex-wrap: wrap;
+    }
+
+    .question-type-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .question-body {
+        padding: 30px;
+    }
+
+    .stats-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid #f8f9fa;
+    }
+
+    .total-responses {
+        font-size: 24px;
+        font-weight: 700;
+        color: #5a9b9e;
+    }
+
+    .responses-label {
+        color: #7f8c8d;
+        font-size: 14px;
+        margin-top: 5px;
+    }
+
+    /* Response Statistics Styles */
+    .response-stats {
+        display: grid;
+        gap: 15px;
+    }
+
+    .response-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        border-left: 4px solid #5a9b9e;
+        transition: all 0.3s ease;
+    }
+
+    .response-item:hover {
+        transform: translateX(5px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .response-text {
+        flex: 1;
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 16px;
+    }
+
+    .response-count {
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 25px;
+        font-size: 14px;
+        font-weight: 700;
+        margin-left: 15px;
+        min-width: 50px;
+        text-align: center;
+    }
+
+    /* Scale Statistics */
+    .scale-stats {
+        text-align: center;
+        padding: 30px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+
+    .scale-average {
+        font-size: 48px;
+        font-weight: 700;
+        color: #5a9b9e;
+        margin-bottom: 10px;
+    }
+
+    .scale-label {
+        color: #7f8c8d;
+        font-size: 16px;
+        margin-bottom: 25px;
+    }
+
+    .scale-distribution {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        flex-wrap: wrap;
+    }
+
+    .scale-item {
+        text-align: center;
+        min-width: 50px;
+    }
+
+    .scale-number {
+        display: block;
+        width: 45px;
+        height: 45px;
+        line-height: 45px;
+        border-radius: 50%;
+        background: #e9ecef;
+        color: #6c757d;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .scale-item.active .scale-number {
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        transform: scale(1.1);
+    }
+
+    .scale-count {
+        font-size: 14px;
+        color: #7f8c8d;
+        font-weight: 600;
+    }
+
+    /* Text Responses */
+    .text-responses {
+        display: grid;
+        gap: 15px;
+    }
+
+    .text-response {
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 10px;
+        border-left: 4px solid #5a9b9e;
+        font-style: italic;
+        color: #495057;
+        font-size: 15px;
+        line-height: 1.6;
+    }
+
+    .text-response::before {
+        content: '"';
+        font-size: 24px;
+        color: #5a9b9e;
+        font-weight: bold;
+    }
+
+    .text-response::after {
+        content: '"';
+        font-size: 24px;
+        color: #5a9b9e;
+        font-weight: bold;
+    }
+
+    /* File Responses */
+    .file-responses {
+        display: grid;
+        gap: 15px;
+    }
+
+    .file-response {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 20px;
+        background: linear-gradient(135deg, #f1f8e9 0%, #e8f5e8 100%);
+        border-radius: 10px;
+        border-left: 4px solid #689f38;
+        transition: all 0.3s ease;
+    }
+
+    .file-response:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-icon {
+        color: #689f38;
+        font-size: 24px;
+    }
+
+    .file-info {
+        flex: 1;
+    }
+
+    .file-name {
+        font-weight: 600;
+        color: #2c3e50;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .file-date {
+        font-size: 14px;
+        color: #7f8c8d;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #7f8c8d;
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        margin-bottom: 20px;
+        opacity: 0.5;
+    }
+
+    .empty-state h3 {
+        font-size: 24px;
+        margin-bottom: 15px;
+        color: #2c3e50;
+    }
+
+    .empty-state p {
+        font-size: 16px;
+        line-height: 1.6;
+        margin-bottom: 25px;
+    }
+
+    .no-questions-state {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        padding: 60px 40px;
+        text-align: center;
+        margin: 40px 0;
     }
 
     .admin-welcome {
@@ -306,239 +409,243 @@
     }
 
     @media (max-width: 768px) {
-        .charts-section {
-            grid-template-columns: 1fr;
-        }
-
-        .stats-grid {
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        }
-
-        .table-header {
+        .action-buttons {
             flex-direction: column;
-            gap: 15px;
+            align-items: center;
+        }
+
+        .summary-stats {
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        }
+
+        .question-header {
+            padding: 20px;
+        }
+
+        .question-body {
+            padding: 20px;
+        }
+
+        .question-meta {
+            flex-direction: column;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .scale-distribution {
+            gap: 10px;
+        }
+
+        .scale-number {
+            width: 40px;
+            height: 40px;
+            line-height: 40px;
+            font-size: 14px;
+        }
+
+        .response-item {
+            flex-direction: column;
+            gap: 10px;
             text-align: center;
         }
 
-        .table th, .table td {
-            padding: 10px 8px;
-            font-size: 13px;
-        }
-
-        .action-buttons {
-            flex-direction: column;
+        .response-count {
+            margin-left: 0;
         }
     }
 </style>
 @endpush
 
 @section('content')
-<!-- Survey Type Switcher -->
-<div class="survey-type-switcher">
-    <div class="switch-header">🎯 Mode Survei Aktif</div>
-    <div class="switch-options">
-        <div class="switch-option">
-            <input type="radio" id="survey_static" name="survey_type" value="static" checked>
-            <label for="survey_static">Survei Statis (Data Diri)</label>
-        </div>
-        <div class="switch-option">
-            <input type="radio" id="survey_dynamic" name="survey_type" value="dynamic">
-            <label for="survey_dynamic">Survei Dinamis (Custom)</label>
-        </div>
-    </div>
-    
-    <div class="survey-info">
-        <div class="info-static">
-            <strong>📝 Survei Statis:</strong> Form sederhana dengan 3 pertanyaan tetap (Nama, Jenis Kelamin, Usia)
-        </div>
-        <div class="info-dynamic">
-            <strong>⚙️ Survei Dinamis:</strong> Survei dengan pertanyaan custom yang bisa Anda atur sendiri melalui menu Pertanyaan
-        </div>
-    </div>
-</div>
-
 <!-- Action Buttons -->
 <div class="action-buttons">
-    <a href="{{ route('admin.export') }}" class="btn btn-success">
-        <span>📥</span>
-        Export Data CSV
-    </a>
-    <a href="{{ route('survey.index') }}" class="btn btn-primary" id="previewSurveyBtn">
-        <span>👁️</span>
-        Preview Survei
-    </a>
-    <a href="{{ route('admin.questions.index') }}" class="btn btn-warning">
-        <span>⚙️</span>
+    <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
+        <i class="fas fa-cog"></i>
         Kelola Pertanyaan
     </a>
+    <a href="{{ route('survey.index') }}" class="btn btn-success">
+        <i class="fas fa-eye"></i>
+        Preview Survei
+    </a>
+    <a href="{{ route('admin.export') }}" class="btn btn-warning">
+        <i class="fas fa-download"></i>
+        Export Data
+    </a>
 </div>
 
-<!-- Statistics Cards -->
-<div class="stats-grid">
-    <div class="stat-card">
-        <div class="stat-number">{{ $totalSurveys }}</div>
-        <div class="stat-label">Total Responden</div>
+<!-- Summary Statistics -->
+<div class="summary-stats">
+    <div class="summary-card">
+        <div class="summary-number">{{ $questions->count() }}</div>
+        <div class="summary-label">Total Pertanyaan</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-number">{{ $maleCount }}</div>
-        <div class="stat-label">Laki-laki</div>
+    <div class="summary-card">
+        <div class="summary-number">{{ $totalSurveys }}</div>
+        <div class="summary-label">Total Responden</div>
     </div>
-    <div class="stat-card">
-        <div class="stat-number">{{ $femaleCount }}</div>
-        <div class="stat-label">Perempuan</div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-number">{{ $surveys->currentPage() }}</div>
-        <div class="stat-label">Halaman {{ $surveys->currentPage() }} dari {{ $surveys->lastPage() }}</div>
+    <div class="summary-card">
+        <div class="summary-number">{{ collect($questionStats)->sum('total_responses') }}</div>
+        <div class="summary-label">Total Jawaban</div>
     </div>
 </div>
 
-<!-- Charts Section -->
-<div class="charts-section">
-    <!-- Age Distribution -->
-    <div class="chart-card">
-        <h3 class="chart-title">Distribusi Usia</h3>
-        <div>
-            @forelse($ageStats as $ageStat)
-                @if($ageStat->age_group)
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px; padding: 8px; background: #f8f9fa; border-radius: 6px;">
-                        <span>{{ $ageStat->age_group }} tahun</span>
-                        <strong>{{ $ageStat->count }} orang</strong>
+<!-- Questions & Answers Section -->
+@if($questions->count() > 0)
+<div class="questions-section">
+    <h1 class="section-title"><i class="fas fa-question-circle"></i> Pertanyaan & Jawaban Survei</h1>
+    <p class="section-subtitle">Lihat semua pertanyaan yang Anda buat beserta jawaban dari responden</p>
+    
+    @foreach($questionStats as $stat)
+    <div class="question-card">
+        <div class="question-header">
+            <div class="question-title">{{ $stat['question']->question_text }}</div>
+            <div class="question-meta">
+                <span class="question-type-badge">
+                    <i class="fas fa-tag"></i> {{ $stat['question']->getQuestionTypeLabel() }}
+                </span>
+                <span><i class="fas fa-layer-group"></i> {{ $stat['question']->section->title }}</span>
+                <span><i class="fas fa-{{ $stat['question']->is_required ? 'star' : 'star-o' }}"></i> {{ $stat['question']->is_required ? 'Wajib' : 'Opsional' }}</span>
+            </div>
+        </div>
+
+        <div class="question-body">
+            <div class="stats-header">
+                <div>
+                    <div class="total-responses">{{ $stat['total_responses'] }}</div>
+                    <div class="responses-label">Total Jawaban</div>
+                </div>
+                @if($stat['total_responses'] > 0)
+                    <div style="color: #28a745;">
+                        <i class="fas fa-check-circle"></i> Ada Jawaban
+                    </div>
+                @else
+                    <div style="color: #ffc107;">
+                        <i class="fas fa-clock"></i> Belum Ada Jawaban
                     </div>
                 @endif
-            @empty
-                <p style="text-align: center; color: #7f8c8d;">Belum ada data</p>
-            @endforelse
-        </div>
-    </div>
+            </div>
 
-    <!-- Daily Stats -->
-    <div class="chart-card">
-        <h3 class="chart-title">Statistik 7 Hari Terakhir</h3>
-        <div class="daily-stats">
-            @forelse($dailyStats as $daily)
-                <div class="daily-item">
-                    <span>{{ \Carbon\Carbon::parse($daily->date)->format('d/m/Y') }}</span>
-                    <strong>{{ $daily->count }} responden</strong>
+            @if($stat['total_responses'] > 0)
+                @if(in_array($stat['question']->question_type, ['multiple_choice', 'dropdown']))
+                    <!-- Multiple Choice / Dropdown Responses -->
+                    <div class="response-stats">
+                        @foreach($stat['response_data'] as $response)
+                            <div class="response-item">
+                                <span class="response-text">{{ $response->answer }}</span>
+                                <span class="response-count">{{ $response->count }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+
+                @elseif($stat['question']->question_type === 'checkbox')
+                    <!-- Checkbox Responses -->
+                    <div class="response-stats">
+                        @foreach($stat['response_data'] as $response)
+                            <div class="response-item">
+                                <span class="response-text">{{ $response->answer }}</span>
+                                <span class="response-count">{{ $response->count }}</span>
+                            </div>
+                        @endforeach
+                    </div>
+
+                @elseif($stat['question']->question_type === 'linear_scale')
+                    <!-- Linear Scale Responses -->
+                    <div class="scale-stats">
+                        <div class="scale-average">{{ $stat['response_data']['average'] ?? 0 }}</div>
+                        <div class="scale-label">Rata-rata dari {{ $stat['response_data']['total_responses'] ?? 0 }} jawaban</div>
+                        
+                        @if(isset($stat['response_data']['distribution']))
+                        <div class="scale-distribution">
+                            @for($i = ($stat['question']->settings['scale_min'] ?? 1); $i <= ($stat['question']->settings['scale_max'] ?? 5); $i++)
+                                <div class="scale-item {{ isset($stat['response_data']['distribution'][$i]) ? 'active' : '' }}">
+                                    <span class="scale-number">{{ $i }}</span>
+                                    <div class="scale-count">{{ $stat['response_data']['distribution'][$i] ?? 0 }} orang</div>
+                                </div>
+                            @endfor
+                        </div>
+                        @endif
+                    </div>
+
+                @elseif(in_array($stat['question']->question_type, ['short_text', 'long_text']))
+                    <!-- Text Responses -->
+                    <div class="text-responses">
+                        @foreach($stat['response_data'] as $response)
+                            <div class="text-response">
+                                {{ Str::limit($response, 200) }}
+                            </div>
+                        @endforeach
+                        
+                        @if($stat['response_data']->count() >= 5)
+                            <div style="text-align: center; margin-top: 20px; padding: 15px; background: #e8f4f8; border-radius: 8px;">
+                                <small style="color: #5a9b9e; font-weight: 600;">
+                                    <i class="fas fa-info-circle"></i>
+                                    Menampilkan 5 jawaban terbaru dari {{ $stat['total_responses'] }} total jawaban
+                                </small>
+                            </div>
+                        @endif
+                    </div>
+
+                @elseif($stat['question']->question_type === 'file_upload')
+                    <!-- File Upload Responses -->
+                    <div class="file-responses">
+                        @foreach($stat['response_data'] as $file)
+                            <div class="file-response">
+                                <i class="fas fa-file file-icon"></i>
+                                <div class="file-info">
+                                    <div class="file-name">{{ $file['filename'] }}</div>
+                                    <div class="file-date">Diupload: {{ \Carbon\Carbon::parse($file['upload_date'])->format('d/m/Y H:i') }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            @else
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <h3>Belum Ada Jawaban</h3>
+                    <p>Pertanyaan ini belum dijawab oleh responden manapun.</p>
                 </div>
-            @empty
-                <p style="text-align: center; color: #7f8c8d; padding: 20px;">Belum ada data 7 hari terakhir</p>
-            @endforelse
+            @endif
         </div>
     </div>
-</div>
-
-<!-- Data Table -->
-<div class="data-table">
-    <div class="table-header">
-        <span>Semua Data Survei ({{ $surveys->total() }} total)</span>
-    </div>
-    <div class="table-container">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Nama</th>
-                    <th>Jenis Kelamin</th>
-                    <th>Usia</th>
-                    <th>IP Address</th>
-                    <th>User Agent</th>
-                    <th>Tanggal</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($surveys as $survey)
-                <tr>
-                    <td>{{ ($surveys->currentPage() - 1) * $surveys->perPage() + $loop->iteration }}</td>
-                    <td><strong>{{ $survey->nama }}</strong></td>
-                    <td>
-                        <span class="gender-badge {{ $survey->jenis_kelamin === 'laki_laki' ? 'badge-male' : 'badge-female' }}">
-                            {{ $survey->jenis_kelamin_label }}
-                        </span>
-                    </td>
-                    <td>{{ $survey->usia }} tahun</td>
-                    <td style="font-family: monospace; font-size: 12px;">{{ $survey->ip_address ?? '-' }}</td>
-                    <td style="font-size: 11px; max-width: 200px; word-break: break-all;">
-                        {{ Str::limit($survey->user_agent ?? '-', 50) }}
-                    </td>
-                    <td style="font-size: 12px;">{{ $survey->created_at->format('d/m/Y H:i') }}</td>
-                    <td>
-                        <a href="#" onclick="if(confirm('Yakin ingin menghapus data {{ $survey->nama }}?')) { document.getElementById('delete-{{ $survey->id }}').submit(); }" class="btn-delete">Hapus</a>
-                        <form id="delete-{{ $survey->id }}" action="{{ route('admin.deleteSurvey', $survey->id) }}" method="POST" style="display: none;">
-                            @csrf
-                            @method('DELETE')
-                        </form>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" style="text-align: center; color: #7f8c8d; padding: 40px;">
-                        Belum ada data survei
-                    </td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
-    </div>
-</div>
-
-<!-- Pagination -->
-@if($surveys->hasPages())
-<div class="pagination">
-    {{-- Previous Page Link --}}
-    @if ($surveys->onFirstPage())
-        <span>&laquo; Sebelumnya</span>
-    @else
-        <a href="{{ $surveys->previousPageUrl() }}">&laquo; Sebelumnya</a>
-    @endif
-
-    {{-- Pagination Elements --}}
-    @foreach ($surveys->getUrlRange(1, $surveys->lastPage()) as $page => $url)
-        @if ($page == $surveys->currentPage())
-            <span class="current">{{ $page }}</span>
-        @else
-            <a href="{{ $url }}">{{ $page }}</a>
-        @endif
     @endforeach
-
-    {{-- Next Page Link --}}
-    @if ($surveys->hasMorePages())
-        <a href="{{ $surveys->nextPageUrl() }}">Selanjutnya &raquo;</a>
-    @else
-        <span>Selanjutnya &raquo;</span>
-    @endif
+</div>
+@else
+<div class="no-questions-state">
+    <div class="empty-state">
+        <i class="fas fa-question-circle"></i>
+        <h3>Belum Ada Pertanyaan</h3>
+        <p>Anda belum membuat pertanyaan survei. Mulai dengan membuat pertanyaan pertama untuk melihat jawaban responden di sini.</p>
+        <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Buat Pertanyaan Pertama
+        </a>
+    </div>
 </div>
 @endif
 @endsection
 
 @push('scripts')
 <script>
-    // Survey type switcher
     document.addEventListener('DOMContentLoaded', function() {
-        const staticRadio = document.getElementById('survey_static');
-        const dynamicRadio = document.getElementById('survey_dynamic');
-        const infoStatic = document.querySelector('.info-static');
-        const infoDynamic = document.querySelector('.info-dynamic');
-        const previewBtn = document.getElementById('previewSurveyBtn');
-
-        function updateSurveyInfo() {
-            if (staticRadio.checked) {
-                infoStatic.style.display = 'block';
-                infoDynamic.style.display = 'none';
-                previewBtn.href = '{{ route("survey.index") }}';
-            } else {
-                infoStatic.style.display = 'none';
-                infoDynamic.style.display = 'block';
-                previewBtn.href = '/dynamic-survey';
-            }
+        // Auto hide success message
+        const successMessage = document.querySelector('.success-message');
+        if (successMessage) {
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
         }
 
-        staticRadio.addEventListener('change', updateSurveyInfo);
-        dynamicRadio.addEventListener('change', updateSurveyInfo);
-
-        // Initialize
-        updateSurveyInfo();
+        // Add smooth scroll to question cards
+        const questionCards = document.querySelectorAll('.question-card');
+        questionCards.forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+        });
     });
 </script>
 @endpush

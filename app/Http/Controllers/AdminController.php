@@ -6,6 +6,7 @@ use App\Models\AdminUser;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
 use App\Models\SurveyResponse;
+use App\Models\SurveySection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -47,14 +48,20 @@ class AdminController extends Controller
             return redirect()->route('admin.login');
         }
 
+        // PERBAIKAN: Hitung survey yang benar-benar ada
         $totalSurveys = Survey::count();
         
-        // Hitung gender berdasarkan responses (menggunakan helper method dari model)
-        $surveys = Survey::with(['responses.question'])->get();
+        // Debug: Log jumlah survey
+        \Log::info('Total surveys in database: ' . $totalSurveys);
+        
+        // Ambil survey yang ada beserta responses
+        $existingSurveys = Survey::with(['responses.question'])->get();
+        
+        // Hitung gender dari survey yang benar-benar ada
         $maleCount = 0;
         $femaleCount = 0;
 
-        foreach ($surveys as $survey) {
+        foreach ($existingSurveys as $survey) {
             $jenisKelamin = $survey->jenis_kelamin;
             if (strpos($jenisKelamin, 'laki') !== false || strpos($jenisKelamin, 'Laki') !== false) {
                 $maleCount++;
@@ -63,7 +70,10 @@ class AdminController extends Controller
             }
         }
         
-        // Statistik usia berdasarkan responses
+        // Debug: Log gender counts
+        \Log::info('Male count: ' . $maleCount . ', Female count: ' . $femaleCount);
+        
+        // Statistik usia dari survey yang ada
         $ageGroups = [
             '15-25' => 0,
             '26-35' => 0,
@@ -72,8 +82,8 @@ class AdminController extends Controller
             '55+' => 0
         ];
 
-        foreach ($surveys as $survey) {
-            $usia = $survey->usia; // Menggunakan accessor
+        foreach ($existingSurveys as $survey) {
+            $usia = $survey->usia;
             if ($usia >= 15 && $usia <= 25) {
                 $ageGroups['15-25']++;
             } elseif ($usia >= 26 && $usia <= 35) {
@@ -95,7 +105,7 @@ class AdminController extends Controller
             ];
         });
 
-        // Data survei dengan paginasi
+        // Data survei dengan paginasi - pastikan hanya survey yang ada
         $surveys = Survey::with(['responses.question'])->latest()->paginate(20);
 
         // Statistik per hari dalam 7 hari terakhir
@@ -108,13 +118,123 @@ class AdminController extends Controller
         ->orderBy('date', 'desc')
         ->get();
 
+        // Ambil pertanyaan aktif
+        $questions = SurveyQuestion::active()->with(['section', 'responses'])->ordered()->get();
+        
+        // Debug: Log jumlah pertanyaan
+        \Log::info('Active questions count: ' . $questions->count());
+        
+        // Statistik jawaban per pertanyaan - PERBAIKAN: hanya hitung responses yang valid
+        $questionStats = [];
+        foreach ($questions as $question) {
+            // Pastikan hanya menghitung responses dari survey yang masih ada
+            $validResponses = $question->responses()->whereHas('survey')->get();
+            
+            $stats = [
+                'question' => $question,
+                'total_responses' => $validResponses->count(),
+                'response_data' => []
+            ];
+
+            if (in_array($question->question_type, ['multiple_choice', 'dropdown'])) {
+                // Untuk pilihan ganda dan dropdown - hanya dari responses yang valid
+                $responseCounts = $question->responses()
+                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->select('answer', DB::raw('count(*) as count'))
+                    ->groupBy('answer')
+                    ->orderBy('count', 'desc')
+                    ->get();
+                
+                $stats['response_data'] = $responseCounts;
+                
+            } elseif ($question->question_type === 'checkbox') {
+                // Untuk checkbox - hanya dari responses yang valid
+                $allAnswers = [];
+                foreach ($validResponses as $response) {
+                    if ($response->answer_data && is_array($response->answer_data)) {
+                        $allAnswers = array_merge($allAnswers, $response->answer_data);
+                    } elseif ($response->answer) {
+                        $answers = explode(', ', $response->answer);
+                        $allAnswers = array_merge($allAnswers, $answers);
+                    }
+                }
+                
+                $answerCounts = array_count_values($allAnswers);
+                arsort($answerCounts);
+                
+                $stats['response_data'] = collect($answerCounts)->map(function($count, $answer) {
+                    return (object)['answer' => $answer, 'count' => $count];
+                });
+                
+            } elseif ($question->question_type === 'linear_scale') {
+                // Untuk skala linier - hanya dari responses yang valid
+                $responses = $question->responses()->whereHas('survey')->pluck('answer')->filter()->map(function($item) {
+                    return (int) $item;
+                });
+                
+                if ($responses->count() > 0) {
+                    $distribution = $responses->countBy()->sort();
+                    $stats['response_data'] = [
+                        'average' => round($responses->avg(), 2),
+                        'total_responses' => $responses->count(),
+                        'distribution' => $distribution
+                    ];
+                }
+                
+            } elseif (in_array($question->question_type, ['short_text', 'long_text'])) {
+                // Untuk jawaban teks - hanya dari responses yang valid
+                $sampleResponses = $question->responses()
+                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->whereNotNull('answer')
+                    ->where('answer', '!=', '')
+                    ->latest()
+                    ->take(5)
+                    ->pluck('answer');
+                
+                $stats['response_data'] = $sampleResponses;
+                
+            } elseif ($question->question_type === 'file_upload') {
+                // Untuk file upload - hanya dari responses yang valid
+                $fileResponses = $question->responses()
+                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->whereNotNull('answer_data')
+                    ->latest()
+                    ->take(10)
+                    ->get();
+                
+                $stats['response_data'] = $fileResponses->map(function($response) {
+                    return [
+                        'filename' => $response->answer,
+                        'upload_date' => $response->created_at,
+                        'file_data' => $response->answer_data
+                    ];
+                });
+            }
+
+            $questionStats[] = $stats;
+        }
+
+        // Ambil jawaban terbaru - hanya dari survey yang masih ada
+        $recentResponses = SurveyResponse::with(['question.section', 'survey'])
+            ->whereHas('survey') // Pastikan survey masih ada
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Debug: Log total valid responses
+        $totalValidResponses = SurveyResponse::whereHas('survey')->count();
+        \Log::info('Total valid responses: ' . $totalValidResponses);
+
         return view('admin.dashboard', compact(
             'totalSurveys', 
             'maleCount', 
             'femaleCount', 
             'ageStats', 
             'surveys',
-            'dailyStats'
+            'dailyStats',
+            'questions',
+            'questionStats',
+            'recentResponses'
         ));
     }
 
