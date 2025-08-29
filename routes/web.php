@@ -18,7 +18,7 @@ Route::get('/admin', [AdminController::class, 'login'])->name('admin.login');
 Route::post('/admin/auth', [AdminController::class, 'authenticate'])->name('admin.authenticate');
 Route::get('/admin/logout', [AdminController::class, 'logout'])->name('admin.logout');
 
-// Admin Dashboard & Management Routes
+// Admin Dashboard & Management Routes - UPDATED untuk mendukung tab parameter
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 Route::delete('/admin/survey/{id}', [AdminController::class, 'deleteSurvey'])->name('admin.deleteSurvey');
@@ -44,8 +44,6 @@ Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
     Route::put('/question/{id}/toggle', [SurveyQuestionController::class, 'toggleQuestion'])->name('toggle-question');
     Route::post('/section/{sectionId}/questions/reorder', [SurveyQuestionController::class, 'updateQuestionOrder'])->name('reorder-questions');
 });
-
-Route::get('/survey/download/{responseId}', [SurveyController::class, 'downloadFile'])->name('survey.download');
 
 // Dynamic Survey Routes (Optional - for future use if needed)
 Route::get('/dynamic-survey', [DynamicSurveyController::class, 'index'])->name('dynamic-survey.index');

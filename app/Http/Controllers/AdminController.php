@@ -41,90 +41,31 @@ class AdminController extends Controller
         return back()->withErrors(['login' => 'Username atau password salah.']);
     }
 
-    public function dashboard()
+    public function dashboard(Request $request)
     {
         // Cek apakah admin sudah login
         if (!session('admin_id')) {
             return redirect()->route('admin.login');
         }
 
-        // PERBAIKAN: Hitung survey yang benar-benar ada
+        $tab = $request->get('tab', 'questions'); // Default ke tab questions
+
+        // Data dasar yang dibutuhkan semua tab
         $totalSurveys = Survey::count();
-        
-        // Debug: Log jumlah survey
-        \Log::info('Total surveys in database: ' . $totalSurveys);
-        
-        // Ambil survey yang ada beserta responses
-        $existingSurveys = Survey::with(['responses.question'])->get();
-        
-        // Hitung gender dari survey yang benar-benar ada
-        $maleCount = 0;
-        $femaleCount = 0;
-
-        foreach ($existingSurveys as $survey) {
-            $jenisKelamin = $survey->jenis_kelamin;
-            if (strpos($jenisKelamin, 'laki') !== false || strpos($jenisKelamin, 'Laki') !== false) {
-                $maleCount++;
-            } elseif (strpos($jenisKelamin, 'perempuan') !== false || strpos($jenisKelamin, 'Perempuan') !== false) {
-                $femaleCount++;
-            }
-        }
-        
-        // Debug: Log gender counts
-        \Log::info('Male count: ' . $maleCount . ', Female count: ' . $femaleCount);
-        
-        // Statistik usia dari survey yang ada
-        $ageGroups = [
-            '15-25' => 0,
-            '26-35' => 0,
-            '36-45' => 0,
-            '46-55' => 0,
-            '55+' => 0
-        ];
-
-        foreach ($existingSurveys as $survey) {
-            $usia = $survey->usia;
-            if ($usia >= 15 && $usia <= 25) {
-                $ageGroups['15-25']++;
-            } elseif ($usia >= 26 && $usia <= 35) {
-                $ageGroups['26-35']++;
-            } elseif ($usia >= 36 && $usia <= 45) {
-                $ageGroups['36-45']++;
-            } elseif ($usia >= 46 && $usia <= 55) {
-                $ageGroups['46-55']++;
-            } elseif ($usia > 55) {
-                $ageGroups['55+']++;
-            }
-        }
-
-        // Convert to collection format
-        $ageStats = collect($ageGroups)->map(function($count, $group) {
-            return (object)[
-                'age_group' => $group,
-                'count' => $count
-            ];
-        });
-
-        // Data survei dengan paginasi - pastikan hanya survey yang ada
-        $surveys = Survey::with(['responses.question'])->latest()->paginate(20);
-
-        // Statistik per hari dalam 7 hari terakhir
-        $dailyStats = Survey::select(
-            DB::raw('DATE(created_at) as date'),
-            DB::raw('COUNT(*) as count')
-        )
-        ->where('created_at', '>=', now()->subDays(7))
-        ->groupBy('date')
-        ->orderBy('date', 'desc')
-        ->get();
-
-        // Ambil pertanyaan aktif
         $questions = SurveyQuestion::active()->with(['section', 'responses'])->ordered()->get();
         
-        // Debug: Log jumlah pertanyaan
-        \Log::info('Active questions count: ' . $questions->count());
-        
-        // Statistik jawaban per pertanyaan - PERBAIKAN: hanya hitung responses yang valid
+        // Data berdasarkan tab yang dipilih
+        switch ($tab) {
+            case 'individual':
+                return $this->getIndividualData($totalSurveys, $questions);
+            default: // questions
+                return $this->getQuestionsData($totalSurveys, $questions);
+        }
+    }
+
+    private function getQuestionsData($totalSurveys, $questions)
+    {
+        // Statistik jawaban per pertanyaan
         $questionStats = [];
         foreach ($questions as $question) {
             // Pastikan hanya menghitung responses dari survey yang masih ada
@@ -137,9 +78,9 @@ class AdminController extends Controller
             ];
 
             if (in_array($question->question_type, ['multiple_choice', 'dropdown'])) {
-                // Untuk pilihan ganda dan dropdown - hanya dari responses yang valid
+                // Untuk pilihan ganda dan dropdown
                 $responseCounts = $question->responses()
-                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->whereHas('survey')
                     ->select('answer', DB::raw('count(*) as count'))
                     ->groupBy('answer')
                     ->orderBy('count', 'desc')
@@ -148,7 +89,7 @@ class AdminController extends Controller
                 $stats['response_data'] = $responseCounts;
                 
             } elseif ($question->question_type === 'checkbox') {
-                // Untuk checkbox - hanya dari responses yang valid
+                // Untuk checkbox
                 $allAnswers = [];
                 foreach ($validResponses as $response) {
                     if ($response->answer_data && is_array($response->answer_data)) {
@@ -167,7 +108,7 @@ class AdminController extends Controller
                 });
                 
             } elseif ($question->question_type === 'linear_scale') {
-                // Untuk skala linier - hanya dari responses yang valid
+                // Untuk skala linier
                 $responses = $question->responses()->whereHas('survey')->pluck('answer')->filter()->map(function($item) {
                     return (int) $item;
                 });
@@ -182,9 +123,9 @@ class AdminController extends Controller
                 }
                 
             } elseif (in_array($question->question_type, ['short_text', 'long_text'])) {
-                // Untuk jawaban teks - hanya dari responses yang valid
+                // Untuk jawaban teks
                 $sampleResponses = $question->responses()
-                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->whereHas('survey')
                     ->whereNotNull('answer')
                     ->where('answer', '!=', '')
                     ->latest()
@@ -194,9 +135,9 @@ class AdminController extends Controller
                 $stats['response_data'] = $sampleResponses;
                 
             } elseif ($question->question_type === 'file_upload') {
-                // Untuk file upload - hanya dari responses yang valid
+                // Untuk file upload
                 $fileResponses = $question->responses()
-                    ->whereHas('survey') // Pastikan survey masih ada
+                    ->whereHas('survey')
                     ->whereNotNull('answer_data')
                     ->latest()
                     ->take(10)
@@ -214,27 +155,24 @@ class AdminController extends Controller
             $questionStats[] = $stats;
         }
 
-        // Ambil jawaban terbaru - hanya dari survey yang masih ada
-        $recentResponses = SurveyResponse::with(['question.section', 'survey'])
-            ->whereHas('survey') // Pastikan survey masih ada
-            ->latest()
-            ->take(10)
-            ->get();
-
-        // Debug: Log total valid responses
-        $totalValidResponses = SurveyResponse::whereHas('survey')->count();
-        \Log::info('Total valid responses: ' . $totalValidResponses);
-
-        return view('admin.dashboard', compact(
-            'totalSurveys', 
-            'maleCount', 
-            'femaleCount', 
-            'ageStats', 
-            'surveys',
-            'dailyStats',
+        return view('admin.dashboard-questions', compact(
+            'totalSurveys',
             'questions',
-            'questionStats',
-            'recentResponses'
+            'questionStats'
+        ));
+    }
+
+    private function getIndividualData($totalSurveys, $questions)
+    {
+        // Data individual responden
+        $surveys = Survey::with(['responses.question.section'])
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.dashboard-individual', compact(
+            'totalSurveys',
+            'questions',
+            'surveys'
         ));
     }
 
