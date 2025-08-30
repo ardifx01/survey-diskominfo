@@ -31,8 +31,12 @@ class AdminController extends Controller
         $admin = AdminUser::where('username', $request->username)->first();
 
         if ($admin && Hash::check($request->password, $admin->password)) {
-            // Set session untuk admin
-            session(['admin_id' => $admin->id, 'admin_name' => $admin->name]);
+            // Set session untuk admin dengan role
+            session([
+                'admin_id' => $admin->id, 
+                'admin_name' => $admin->name,
+                'admin_role' => $admin->role
+            ]);
             
             // Update last login
             $admin->update(['last_login_at' => now()]);
@@ -539,7 +543,7 @@ private function getSectionData($totalSurveys, $questions)
 
     public function logout()
     {
-        session()->forget(['admin_id', 'admin_name']);
+        session()->forget(['admin_id', 'admin_name', 'admin_role']);
         return redirect()->route('admin.login')->with('message', 'Berhasil logout.');
     }
 

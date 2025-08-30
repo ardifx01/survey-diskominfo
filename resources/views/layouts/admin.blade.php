@@ -344,6 +344,10 @@
                     <span class="menu-icon"><i class="fas fa-clipboard-list"></i></span>
                     Pertanyaan
                 </a>
+                <a href="{{ route('admin.users.index') }}" class="menu-item @yield('active-users')">
+                    <span class="menu-icon"><i class="fas fa-users"></i></span>
+                    Users
+                </a>
             </div>
 
             <div class="logout-section">

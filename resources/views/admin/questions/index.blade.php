@@ -231,10 +231,6 @@
         <i class="fas fa-plus"></i>
         Tambahkan Bagian
     </a>
-    <a href="{{ route('survey.index') }}" class="btn btn-success">
-        <i class="fas fa-eye"></i>
-        Preview Survei
-    </a>
 </div>
 
 <!-- Sections -->

@@ -161,25 +161,45 @@
         letter-spacing: 1px;
     }
 
-    /* Section Cards */
+    /* ========== PERBAIKAN UTAMA: SECTION DAN QUESTION CARDS ========== */
+    
+    /* Section Cards dengan counter reset untuk nomor pertanyaan */
     .section-card {
         background: white;
         border-radius: 15px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
         margin-bottom: 40px;
         overflow: hidden;
+        counter-reset: question-counter; /* Reset counter untuk setiap section */
     }
 
     .section-header {
         background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
         color: white;
         padding: 30px 35px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Decorative element untuk section header */
+    .section-header::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 100px;
+        height: 100px;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        z-index: 1;
     }
 
     .section-title {
         font-size: 24px;
         font-weight: 700;
         margin-bottom: 10px;
+        position: relative;
+        z-index: 2;
     }
 
     .section-description {
@@ -187,19 +207,69 @@
         opacity: 0.9;
         line-height: 1.5;
         margin-bottom: 20px;
+        position: relative;
+        z-index: 2;
     }
 
+    /* PERBAIKAN UTAMA: question-card dengan pemisah yang jelas */
     .question-card {
-        border-bottom: 1px solid #f1f3f4;
-        padding: 30px 35px;
+        border-bottom: none; /* Hilangkan border default */
+        padding: 35px 40px;
+        margin: 15px 20px 25px 20px; /* Margin untuk memberikan jarak dari tepi section */
+        position: relative;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        transition: all 0.3s ease;
+    }
+
+    .question-card:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+        transform: translateY(-2px);
     }
 
     .question-card:last-child {
-        border-bottom: none;
+        margin-bottom: 20px;
+    }
+
+    /* Nomor pertanyaan di pojok kiri atas */
+    .question-card::before {
+        content: counter(question-counter);
+        counter-increment: question-counter;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 14px;
+        z-index: 3;
+        box-shadow: 0 2px 8px rgba(90, 155, 158, 0.3);
+    }
+
+    /* Divider line antara pertanyaan yang lebih menarik */
+    .question-card:not(:last-child)::after {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent 0%, #5a9b9e 20%, #7fb3b6 50%, #5a9b9e 80%, transparent 100%);
+        border-radius: 1px;
+        z-index: 1;
     }
 
     .question-header {
         margin-bottom: 20px;
+        padding-left: 50px; /* Beri ruang untuk nomor pertanyaan */
     }
 
     .question-text {
@@ -207,81 +277,163 @@
         font-weight: 600;
         color: #2c3e50;
         margin-bottom: 10px;
+        line-height: 1.4;
+        padding-right: 20px;
     }
 
     .question-meta {
         display: flex;
-        gap: 20px;
+        gap: 15px;
         color: #7f8c8d;
         font-size: 14px;
         flex-wrap: wrap;
+        align-items: center;
     }
 
     .question-meta span {
         display: flex;
         align-items: center;
         gap: 5px;
+        background: #f8f9fa;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 500;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
     }
 
+    .question-meta span:hover {
+        background: #e9ecef;
+        border-color: #dee2e6;
+    }
+
+    /* Response stats dengan grid yang lebih responsive */
     .response-stats {
-        display: flex;
-        gap: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
         margin-bottom: 20px;
     }
 
     .stat-item {
-        background: #f8f9fa;
-        padding: 15px 20px;
-        border-radius: 8px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        padding: 20px;
+        border-radius: 10px;
         text-align: center;
-        flex: 1;
+        border: 1px solid #e9ecef;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-item::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #5a9b9e, #7fb3b6);
+        border-radius: 10px 10px 0 0;
+    }
+
+    .stat-item:hover {
+        border-color: #5a9b9e;
+        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.15);
+        transform: translateY(-2px);
     }
 
     .stat-number {
         font-size: 20px;
         font-weight: 700;
         color: #5a9b9e;
+        margin-bottom: 5px;
     }
 
     .stat-label {
         font-size: 12px;
         color: #7f8c8d;
         text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 600;
     }
 
-    /* Response Data */
+    /* Response data styling yang lebih menarik */
     .response-data {
         margin-top: 20px;
+        background: #f8f9fa;
+        padding: 25px;
+        border-radius: 12px;
+        border-left: 4px solid #5a9b9e;
     }
 
     .chart-container {
-        background: #f8f9fa;
-        padding: 20px;
-        border-radius: 8px;
+        background: white;
+        padding: 25px;
+        border-radius: 10px;
         margin-top: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: 1px solid #f1f3f4;
+    }
+
+    .chart-container h4 {
+        color: #2c3e50;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
     }
 
     .distribution-item {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 8px 0;
-        border-bottom: 1px solid #e9ecef;
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f3f4;
+        transition: all 0.3s ease;
+    }
+
+    .distribution-item:hover {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     .distribution-item:last-child {
         border-bottom: none;
     }
 
-    .distribution-bar {
-        height: 20px;
-        background: #5a9b9e;
-        border-radius: 10px;
-        margin-left: 15px;
-        min-width: 30px;
+    .distribution-item span:first-child {
+        font-weight: 500;
+        color: #2c3e50;
     }
 
-    /* File Responses */
+    .distribution-bar {
+        height: 24px;
+        background: linear-gradient(90deg, #5a9b9e 0%, #7fb3b6 100%);
+        border-radius: 12px;
+        margin-left: 15px;
+        min-width: 30px;
+        box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .distribution-bar::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+        border-radius: 12px 12px 0 0;
+    }
+
+    /* File responses styling */
     .file-responses {
         display: grid;
         gap: 15px;
@@ -293,14 +445,25 @@
         align-items: center;
         gap: 15px;
         padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
+        background: white;
+        border-radius: 10px;
+        border: 1px solid #e9ecef;
         border-left: 4px solid #28a745;
+        transition: all 0.3s ease;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .file-response:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-1px);
     }
 
     .file-icon {
         color: #28a745;
         font-size: 20px;
+        background: rgba(40, 167, 69, 0.1);
+        padding: 10px;
+        border-radius: 8px;
     }
 
     .file-info {
@@ -342,17 +505,70 @@
         color: white;
     }
 
+    /* Sample responses styling */
+    .sample-responses {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-top: 15px;
+        border: 1px solid #e9ecef;
+    }
+
+    .sample-responses h4 {
+        color: #2c3e50;
+        font-size: 16px;
+        font-weight: 600;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .sample-response {
+        padding: 12px 0;
+        border-bottom: 1px solid #f1f3f4;
+        transition: all 0.3s ease;
+    }
+
+    .sample-response:hover {
+        background: #f8f9fa;
+        border-radius: 6px;
+        padding: 12px 10px;
+    }
+
+    .sample-response:last-child {
+        border-bottom: none;
+    }
+
+    .response-text {
+        font-style: italic;
+        color: #495057;
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+
+    .response-date {
+        font-size: 12px;
+        color: #7f8c8d;
+        font-weight: 500;
+    }
+
     /* Empty State */
     .empty-state {
         text-align: center;
         padding: 60px 20px;
         color: #7f8c8d;
+        background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+        border-radius: 12px;
+        margin: 20px;
+        border: 2px dashed #dee2e6;
     }
 
     .empty-state i {
         font-size: 48px;
         margin-bottom: 20px;
         opacity: 0.5;
+        color: #bdc3c7;
     }
 
     .empty-state h3 {
@@ -365,33 +581,9 @@
         font-size: 16px;
         line-height: 1.6;
         margin-bottom: 25px;
-    }
-
-    .sample-responses {
-        background: #f8f9fa;
-        border-radius: 8px;
-        padding: 15px;
-        margin-top: 15px;
-    }
-
-    .sample-response {
-        padding: 10px 0;
-        border-bottom: 1px solid #e9ecef;
-    }
-
-    .sample-response:last-child {
-        border-bottom: none;
-    }
-
-    .response-text {
-        font-style: italic;
-        color: #495057;
-        margin-bottom: 5px;
-    }
-
-    .response-date {
-        font-size: 12px;
-        color: #7f8c8d;
+        max-width: 400px;
+        margin-left: auto;
+        margin-right: auto;
     }
 
     .admin-welcome {
@@ -399,6 +591,7 @@
         color: #7f8c8d;
     }
 
+    /* Mobile responsive */
     @media (max-width: 768px) {
         .action-buttons {
             flex-direction: column;
@@ -414,12 +607,17 @@
             font-size: 14px;
         }
 
-        .question-header {
-            padding: 20px;
+        .question-card {
+            padding: 25px 20px;
+            margin: 10px 15px 20px 15px;
         }
 
-        .section-header {
-            padding: 20px;
+        .question-header {
+            padding-left: 40px;
+        }
+
+        .question-text {
+            font-size: 16px;
         }
 
         .question-meta {
@@ -428,9 +626,81 @@
             align-items: flex-start;
         }
 
-        .response-stats {
-            flex-direction: column;
+        .question-meta span {
+            font-size: 12px;
+            padding: 4px 8px;
         }
+
+        .response-stats {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .section-header {
+            padding: 20px 25px;
+        }
+
+        .section-title {
+            font-size: 20px;
+        }
+
+        .section-description {
+            font-size: 14px;
+        }
+
+        .response-data {
+            padding: 20px 15px;
+        }
+
+        .chart-container {
+            padding: 20px 15px;
+        }
+
+        .distribution-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+
+        .distribution-bar {
+            width: 100%;
+            margin-left: 0;
+            height: 20px;
+        }
+
+        .empty-state {
+            padding: 40px 15px;
+            margin: 15px;
+        }
+        
+        .empty-state i {
+            font-size: 36px;
+        }
+        
+        .empty-state h3 {
+            font-size: 20px;
+        }
+    }
+
+    /* Animation untuk smooth loading */
+    .question-card {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Smooth scroll behavior */
+    html {
+        scroll-behavior: smooth;
     }
 </style>
 @endpush
@@ -451,19 +721,19 @@
 
     <!-- Tab Navigation -->
     <div class="tab-navigation">
-    <div class="tab-nav">
-        <a href="{{ route('admin.dashboard', ['tab' => 'questions']) }}" 
-            class="tab-item {{ request('tab', 'questions') === 'questions' ? 'active' : '' }}">
-            <i class="tab-icon fas fa-question-circle"></i>
-            Pertanyaan & Jawaban
-        </a>
-        <a href="{{ route('admin.dashboard', ['tab' => 'individual']) }}" 
-            class="tab-item {{ request('tab') === 'individual' ? 'active' : '' }}">
-            <i class="tab-icon fas fa-users"></i>
-            Individual
-        </a>
+        <div class="tab-nav">
+            <a href="{{ route('admin.dashboard', ['tab' => 'questions']) }}" 
+                class="tab-item {{ request('tab', 'questions') === 'questions' ? 'active' : '' }}">
+                <i class="tab-icon fas fa-question-circle"></i>
+                Pertanyaan & Jawaban
+            </a>
+            <a href="{{ route('admin.dashboard', ['tab' => 'individual']) }}" 
+                class="tab-item {{ request('tab') === 'individual' ? 'active' : '' }}">
+                <i class="tab-icon fas fa-users"></i>
+                Individual
+            </a>
+        </div>
     </div>
-</div>
 
     <!-- Summary Stats -->
     <div class="summary-stats">

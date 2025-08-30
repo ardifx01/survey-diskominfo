@@ -14,6 +14,7 @@ class AdminUser extends Authenticatable
         'username',
         'password',
         'name',
+        'role',
         'last_login_at',
     ];
 
@@ -28,5 +29,15 @@ class AdminUser extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->role === 'super_admin';
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
     }
 }
