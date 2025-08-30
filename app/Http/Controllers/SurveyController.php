@@ -372,59 +372,116 @@ class SurveyController extends Controller
     }
 
     public function export()
-    {
-        $surveys = Survey::with(['responses.question'])->orderBy('created_at', 'desc')->get();
-        $questions = SurveyQuestion::active()->ordered()->get();
+{
+    // Ambil data dengan relasi yang diperlukan, diurutkan berdasarkan tanggal terbaru
+    $surveys = Survey::with(['responses.question'])
+        ->orderBy('created_at', 'desc')
+        ->get();
+    
+    // Ambil pertanyaan yang aktif dan diurutkan berdasarkan order
+    $questions = SurveyQuestion::active()->ordered()->get();
 
-        // Header CSV
-        $headers = ['ID', 'Tanggal Pengisian', 'IP Address'];
-        
-        // Tambahkan header untuk setiap pertanyaan
-        foreach ($questions as $question) {
-            $headers[] = $question->question_text;
-        }
-
-        $csvData = implode(',', array_map(function($header) {
-            return '"' . str_replace('"', '""', $header) . '"';
-        }, $headers)) . "\n";
-
-        // Data rows
-        foreach ($surveys as $survey) {
-            $row = [
-                $survey->id,
-                $survey->created_at->format('Y-m-d H:i:s'),
-                $survey->ip_address ?: ''
-            ];
-
-            // Tambahkan jawaban untuk setiap pertanyaan
-            foreach ($questions as $question) {
-                $response = $survey->responses->firstWhere('question_id', $question->id);
-                $answer = $response ? $response->answer : '';
-                
-                // Format khusus untuk file upload
-                if ($question->question_type === 'file_upload' && $response && $response->answer_data) {
-                    $answer = $response->answer_data['filename'] ?? $answer;
-                    // Tambahkan URL file jika perlu
-                    if (isset($response->answer_data['path'])) {
-                        $answer .= ' (' . asset('storage/' . $response->answer_data['path']) . ')';
-                    }
-                }
-                
-                $row[] = $answer;
-            }
-
-            $csvData .= implode(',', array_map(function($field) {
-                return '"' . str_replace('"', '""', $field) . '"';
-            }, $row)) . "\n";
-        }
-
-        return response($csvData)
-            ->header('Content-Type', 'text/csv; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="survei-dinamis-' . date('Y-m-d') . '.csv"')
-            ->header('Cache-Control', 'no-cache, must-revalidate')
-            ->header('Pragma', 'no-cache')
-            ->header('Expires', '0');
+    // Header CSV yang konsisten
+    $headers = [
+        'ID Survei',
+        'Tanggal Pengisian',
+        'Nama Responden', 
+        'Jenis Kelamin',
+        'Usia',
+        'IP Address'
+    ];
+    
+    // Tambahkan header untuk setiap pertanyaan berdasarkan urutan yang benar
+    foreach ($questions as $question) {
+        // Bersihkan teks pertanyaan untuk header
+        $questionText = strip_tags($question->question_text);
+        $questionText = str_replace(["\r", "\n", "\t"], ' ', $questionText);
+        $questionText = trim($questionText);
+        $headers[] = $questionText;
     }
+
+    // Buat header CSV dengan encoding yang benar
+    $csvData = "\xEF\xBB\xBF"; // BOM untuk UTF-8
+    $csvData .= implode(',', array_map(function($header) {
+        return '"' . str_replace('"', '""', $header) . '"';
+    }, $headers)) . "\n";
+
+    // Buat baris data
+    foreach ($surveys as $survey) {
+        $row = [
+            $survey->id,
+            $survey->created_at->format('Y-m-d H:i:s'),
+            $survey->nama ?: '-', // Menggunakan accessor nama
+            $survey->jenis_kelamin_label ?: '-', // Menggunakan accessor jenis kelamin
+            $survey->usia ?: '-', // Menggunakan accessor usia
+            $survey->ip_address ?: '-'
+        ];
+
+        // Tambahkan jawaban untuk setiap pertanyaan sesuai urutan yang benar
+        foreach ($questions as $question) {
+            $response = $survey->responses->firstWhere('question_id', $question->id);
+            $answer = '';
+            
+            if ($response) {
+                // Handle berbagai tipe jawaban
+                switch ($question->question_type) {
+                    case 'file_upload':
+                        if ($response->answer_data && isset($response->answer_data['filename'])) {
+                            $answer = $response->answer_data['filename'];
+                            // Tambahkan URL file jika diperlukan
+                            if (isset($response->answer_data['path'])) {
+                                $answer .= ' (' . asset('storage/' . $response->answer_data['path']) . ')';
+                            }
+                        } else {
+                            $answer = $response->answer ?: '-';
+                        }
+                        break;
+                        
+                    case 'checkbox':
+                        // Untuk checkbox multiple, gabungkan jawaban
+                        if ($response->answer_data && is_array($response->answer_data)) {
+                            $answer = implode('; ', $response->answer_data);
+                        } else {
+                            $answer = $response->answer ?: '-';
+                        }
+                        break;
+                        
+                    case 'linear_scale':
+                        $answer = $response->answer ?: '-';
+                        break;
+                        
+                    default:
+                        $answer = $response->answer ?: '-';
+                }
+            } else {
+                $answer = '-'; // Tidak ada jawaban
+            }
+            
+            // Bersihkan jawaban dari karakter yang bermasalah
+            $answer = str_replace(["\r", "\n", "\t"], ' ', $answer);
+            $answer = trim($answer);
+            
+            $row[] = $answer;
+        }
+
+        // Escape semua field untuk CSV
+        $csvRow = implode(',', array_map(function($field) {
+            return '"' . str_replace('"', '""', $field) . '"';
+        }, $row));
+        
+        $csvData .= $csvRow . "\n";
+    }
+
+    // Generate filename yang unik
+    $filename = 'survei-dinamis-' . date('Y-m-d_H-i-s') . '.csv';
+
+    return response($csvData)
+        ->header('Content-Type', 'text/csv; charset=UTF-8')
+        ->header('Content-Disposition', 'attachment; filename="' . $filename . '"')
+        ->header('Cache-Control', 'no-cache, must-revalidate')
+        ->header('Pragma', 'no-cache')
+        ->header('Expires', '0');
+}
 
     public function downloadFile($responseId)
 {

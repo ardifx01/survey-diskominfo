@@ -47,11 +47,7 @@ Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
 
 Route::get('/admin/survey/{id}/detail', [AdminController::class, 'getSurveyDetail'])->name('admin.surveyDetail');
 
-// Dynamic Survey Routes (Optional - for future use if needed)
-Route::get('/dynamic-survey', [DynamicSurveyController::class, 'index'])->name('dynamic-survey.index');
-Route::post('/dynamic-survey', [DynamicSurveyController::class, 'store'])->name('dynamic-survey.store');
-Route::get('/dynamic-survey/preview', [DynamicSurveyController::class, 'preview'])->name('dynamic-survey.preview');
-Route::get('/dynamic-survey/structure', [DynamicSurveyController::class, 'getStructure'])->name('dynamic-survey.structure');
-Route::get('/dynamic-survey/stats', [DynamicSurveyController::class, 'getStats'])->name('dynamic-survey.stats');
-Route::get('/dynamic-survey/export', [DynamicSurveyController::class, 'export'])->name('dynamic-survey.export');
-Route::get('/dynamic-survey/download/{responseId}', [DynamicSurveyController::class, 'downloadFile'])->name('dynamic-survey.download');
+// Admin File Management Routes
+Route::get('/admin/response/{id}/download', [AdminController::class, 'downloadFile'])->name('admin.downloadFile');
+Route::get('/admin/response/{id}/view', [AdminController::class, 'viewFile'])->name('admin.viewFile');
+Route::get('/admin/uploaded-files', [AdminController::class, 'getUploadedFiles'])->name('admin.uploadedFiles');

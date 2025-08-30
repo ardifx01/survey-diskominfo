@@ -60,6 +60,17 @@
         box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
     }
 
+    .btn-info {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-info:hover {
+        background: #138496;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(23, 162, 184, 0.3);
+    }
+
     .btn-warning {
         background: #ffc107;
         color: #212529;
@@ -549,20 +560,17 @@
 
 @section('content')
 <!-- Action Buttons -->
-<div class="action-buttons">
-    <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
-        <i class="fas fa-cog"></i>
-        Kelola Pertanyaan
-    </a>
-    <a href="{{ route('survey.index') }}" class="btn btn-success">
-        <i class="fas fa-eye"></i>
-        Preview Survei
-    </a>
-    <a href="{{ route('admin.export') }}" class="btn btn-warning">
-        <i class="fas fa-download"></i>
-        Export Data
-    </a>
-</div>
+<!-- Action Buttons -->
+    <div class="action-buttons">
+        <a href="{{ route('admin.questions.index') }}" class="btn btn-primary">
+            <i class="fas fa-cogs"></i>
+            Kelola Pertanyaan
+        </a>
+        <a href="{{ route('admin.export') }}" class="btn btn-success">
+            <i class="fas fa-download"></i>
+            Export Data
+        </a>
+    </div>
 
 <!-- Summary Statistics -->
 <div class="summary-stats">
@@ -827,11 +835,26 @@
                                 `;
                             } else if (response.question_type === 'file_upload' && response.file_info) {
                                 detailHTML += `
-                                    <div style="display: flex; align-items: center; gap: 15px;">
-                                        <i class="fas fa-file" style="font-size: 24px; color: #689f38;"></i>
-                                        <div>
-                                            <div style="font-weight: 600; color: #2c3e50;">${response.formatted_answer}</div>
-                                            <div style="font-size: 14px; color: #7f8c8d;">File berhasil diupload</div>
+                                    <div style="display: flex; align-items: center; gap: 15px; justify-content: space-between;">
+                                        <div style="display: flex; align-items: center; gap: 15px;">
+                                            <i class="fas fa-file" style="font-size: 24px; color: #689f38;"></i>
+                                            <div>
+                                                <div style="font-weight: 600; color: #2c3e50;">${response.formatted_answer}</div>
+                                                <div style="font-size: 14px; color: #7f8c8d;">
+                                                    ${response.file_info.size ? (response.file_info.size / 1024).toFixed(1) + ' KB' : 'Ukuran tidak diketahui'} 
+                                                    ${response.file_info.mime_type ? '• ' + response.file_info.mime_type : ''}
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="display: flex; gap: 8px;">
+                                            ${isImage(response.file_info.mime_type) ? 
+                                                `<a href="/admin/response/${response.response_id}/view" target="_blank" style="background: #17a2b8; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                                    <i class="fas fa-eye"></i> Lihat
+                                                </a>` : ''
+                                            }
+                                            <a href="/admin/response/${response.response_id}/download" style="background: #28a745; color: white; padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 12px; display: flex; align-items: center; gap: 5px;">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
                                         </div>
                                     </div>
                                 `;
@@ -883,6 +906,12 @@
         if (event.target === modal) {
             closeDetailModal();
         }
+    }
+
+    // Helper function to check if file is image
+    function isImage(mimeType) {
+        if (!mimeType) return false;
+        return mimeType.startsWith('image/');
     }
 
     // Auto-hide success messages

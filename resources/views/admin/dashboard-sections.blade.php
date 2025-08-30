@@ -833,6 +833,23 @@
                                         <div class="file-info">
                                             <div class="file-name">{{ $file['filename'] }}</div>
                                             <div class="file-date">Diupload: {{ \Carbon\Carbon::parse($file['upload_date'])->format('d/m/Y H:i') }}</div>
+                                            @if(isset($file['file_data']['size']))
+                                                <div style="font-size: 12px; color: #7f8c8d;">
+                                                    {{ number_format($file['file_data']['size'] / 1024, 1) }} KB
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="file-actions">
+                                            @if(isset($file['file_data']['mime_type']) && str_starts_with($file['file_data']['mime_type'], 'image/'))
+                                                <a href="{{ route('admin.viewFile', $file['response_id']) }}" target="_blank" 
+                                                   style="background: #17a2b8; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px; margin-right: 8px;">
+                                                    <i class="fas fa-eye"></i> Lihat
+                                                </a>
+                                            @endif
+                                            <a href="{{ route('admin.downloadFile', $file['response_id']) }}" 
+                                               style="background: #28a745; color: white; padding: 6px 12px; border-radius: 4px; text-decoration: none; font-size: 12px;">
+                                                <i class="fas fa-download"></i> Download
+                                            </a>
                                         </div>
                                     </div>
                                 @endforeach
