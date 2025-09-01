@@ -49,35 +49,77 @@
         .logos {
             display: flex;
             align-items: center;
-            gap: 30px;
+            gap: 20px;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            padding: 5px 0;
         }
 
         .logo-item {
             display: flex;
             align-items: center;
             gap: 15px;
+            flex-shrink: 0;
         }
 
+        /* Dynamic logo sizing based on count */
         .logo-image {
-            width: 60px;
-            height: 60px;
             border-radius: 8px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.1);
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        /* Default size for 1-2 logos */
+        .logos[data-count="1"] .logo-image,
+        .logos[data-count="2"] .logo-image {
+            width: 60px;
+            height: 60px;
+        }
+
+        /* Medium size for 3-4 logos */
+        .logos[data-count="3"] .logo-image,
+        .logos[data-count="4"] .logo-image {
+            width: 50px;
+            height: 50px;
+        }
+
+        /* Small size for 5-6 logos */
+        .logos[data-count="5"] .logo-image,
+        .logos[data-count="6"] .logo-image {
+            width: 45px;
+            height: 45px;
+        }
+
+        /* Extra small size for 7+ logos */
+        .logos[data-count="7"] .logo-image,
+        .logos[data-count="8"] .logo-image,
+        .logos[data-count="9"] .logo-image,
+        .logos[data-count="10"] .logo-image {
+            width: 40px;
+            height: 40px;
+        }
+
+        /* Very small for 10+ logos */
+        .logos[data-count^="1"] .logo-image {
+            width: 35px;
+            height: 35px;
         }
 
         .logo-image img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            object-fit: contain;
+            border-radius: 4px;
         }
 
         .logo-text {
             color: white;
             text-align: center;
+            margin-left: 20px;
         }
 
         .logo-text .main-text {
@@ -168,15 +210,20 @@
             font-size: 18px;
             font-weight: 600;
             margin-bottom: 15px;
-            color: #5a9b9e;
+            color: #ecf0f1;
         }
 
         .footer-section p,
-        .footer-section li {
-            font-size: 14px;
+        .footer-section a {
+            color: #bdc3c7;
+            text-decoration: none;
             line-height: 1.6;
-            opacity: 0.9;
-            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .footer-section a:hover {
+            color: #5a9b9e;
+            transition: color 0.3s ease;
         }
 
         .footer-section ul {
@@ -184,100 +231,71 @@
         }
 
         .footer-section ul li {
-            padding: 5px 0;
-        }
-
-        .footer-section ul li:before {
-            content: "▶";
-            color: #5a9b9e;
-            font-size: 10px;
-            margin-right: 8px;
-        }
-
-        .footer-contact {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .footer-contact .icon {
-            width: 20px;
-            height: 20px;
-            background: #5a9b9e;
-            border-radius: 3px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 12px;
+            margin-bottom: 8px;
         }
 
         .footer-bottom {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid #34495e;
             padding-top: 20px;
             text-align: center;
         }
 
         .footer-bottom p {
-            font-size: 13px;
-            opacity: 0.8;
-            margin-bottom: 5px;
+            color: #95a5a6;
+            font-size: 12px;
         }
 
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 15px;
-        }
-
-        .footer-links a {
-            color: #5a9b9e;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .footer-links a:hover {
-            opacity: 0.8;
-        }
-
+        /* Responsive Design */
         @media (max-width: 768px) {
             .header {
                 padding: 20px;
             }
-            
+
             .header-content {
                 flex-direction: column;
                 gap: 20px;
                 text-align: center;
             }
-            
+
             .logos {
-                flex-wrap: nowrap;
-                gap: 10px;
+                gap: 15px;
                 justify-content: center;
-                overflow-x: auto;
-                padding: 0 10px;
+                /* Keep horizontal layout on mobile */
+                flex-direction: row;
+                flex-wrap: nowrap;
             }
 
-            .logo-item {
-                flex-shrink: 0;
-                min-width: 40px;
+            /* Adjust logo sizes for mobile */
+            .logos[data-count="1"] .logo-image,
+            .logos[data-count="2"] .logo-image {
+                width: 50px;
+                height: 50px;
             }
 
-            .logo-image {
+            .logos[data-count="3"] .logo-image,
+            .logos[data-count="4"] .logo-image {
                 width: 40px;
                 height: 40px;
             }
-            
-            .program-badges {
-                justify-content: center;
-                flex-wrap: wrap;
+
+            .logos[data-count="5"] .logo-image,
+            .logos[data-count="6"] .logo-image,
+            .logos[data-count="7"] .logo-image,
+            .logos[data-count="8"] .logo-image,
+            .logos[data-count="9"] .logo-image,
+            .logos[data-count="10"] .logo-image {
+                width: 35px;
+                height: 35px;
             }
-            
-            .main-content {
-                padding: 30px 20px;
+
+            .logos[data-count^="1"] .logo-image {
+                width: 30px;
+                height: 30px;
+            }
+
+            .program-badges {
+                flex-wrap: wrap;
+                justify-content: center;
             }
 
             .title-section h1 {
@@ -288,8 +306,16 @@
                 font-size: 20px;
             }
 
+            .title-section h3 {
+                font-size: 16px;
+            }
+
             .title-section h4 {
                 font-size: 16px;
+            }
+
+            .main-content {
+                padding: 30px 20px;
             }
 
             .footer-content {
@@ -298,13 +324,7 @@
 
             .footer-grid {
                 grid-template-columns: 1fr;
-                gap: 25px;
-                text-align: center;
-            }
-
-            .footer-links {
-                flex-wrap: wrap;
-                gap: 15px;
+                gap: 30px;
             }
         }
     </style>
@@ -314,49 +334,47 @@
     <div class="container">
         <div class="header">
             <div class="header-content">
-                <div class="logos">
-                    <!-- Logo 1 - Jawa Timur -->
+                @php
+                    // Get all active logos from database
+                    $activeLogos = \App\Models\Asset::getAllActiveLogos();
+                @endphp
+                
+                <div class="logos" data-count="{{ $activeLogos->count() }}">
+                    @if($activeLogos->count() > 0)
+                        @foreach($activeLogos as $logo)
+                        <div class="logo-item">
+                            <div class="logo-image">
+                                <img src="{{ $logo->file_url }}" alt="{{ $logo->original_name }}">
+                            </div>
+                        </div>
+                        @endforeach
+                    @else
+                    {{-- Default logo if no asset found --}}
                     <div class="logo-item">
                         <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-jatim.png') }}" alt="Logo Jawa Timur">
+                            <i class="fas fa-building" style="font-size: 30px; color: rgba(255,255,255,0.5);"></i>
                         </div>
                     </div>
+                    @endif
+                </div>
 
-                    <!-- Logo 2 - Kabupaten Lamongan -->
-                    <div class="logo-item">
-                        <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-lamongan.png') }}" alt="Logo Kabupaten Lamongan">
-                        </div>
-                    </div>
+                <div class="program-badges">
+                    <div class="badge">SMART CITY</div>
+                    <div class="badge">DIGITAL LAMONGAN</div>
+                </div>
 
-                    <!-- Logo 3 - Diskominfo -->
-                    <div class="logo-item">
-                        <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-diskominfo.png') }}" alt="Logo Diskominfo">
-                        </div>
-                    </div>
-
-                    <!-- Logo 4 - Kemendagri -->
-                    <div class="logo-item">
-                        <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-kemendagri.png') }}" alt="Logo Kemendagri">
-                        </div>
-                    </div>
-
-                    <!-- Logo 5 - Indonesia -->
-                    <div class="logo-item">
-                        <div class="logo-image">
-                            <img src="{{ asset('images/logos/logo-indonesia.png') }}" alt="Logo Indonesia">
-                        </div>
-                    </div>
+                <div class="logo-text">
+                    <div class="main-text">DINAS KOMUNIKASI</div>
+                    <div class="main-text">DAN INFORMATIKA</div>
+                    <div class="sub-text">KABUPATEN LAMONGAN</div>
                 </div>
             </div>
-            
+
             <div class="title-section">
-                <h1>Selamat Datang</h1>
-                <h2>Survei Kepuasan Masyarakat pada</h2>
-                <h3>Dinas Komunikasi dan Informatika</h3>
-                <h4>KABUPATEN LAMONGAN</h4>
+                <h1>SURVEI KEPUASAN MASYARAKAT</h1>
+                <h2>Dinas Komunikasi dan Informatika</h2>
+                <h3>Kabupaten Lamongan</h3>
+                <h4>TAHUN 2025</h4>
             </div>
         </div>
 
@@ -364,40 +382,45 @@
             @yield('content')
         </div>
 
-        <div class="footer">
+        <footer class="footer">
             <div class="footer-content">
                 <div class="footer-grid">
-                    <!-- Tentang -->
                     <div class="footer-section">
-                        {{-- <h4>Dinas Komunikasi dan Informatika</h4>
+                        <h4>Dinas Komunikasi dan Informatika</h4>
                         <p>Kabupaten Lamongan</p>
-                        <p>Melayani masyarakat dengan dedikasi tinggi dalam bidang komunikasi dan informatika untuk mewujudkan Lamongan yang lebih maju dan berkarakter.</p> --}}
-                        
-                        <div class="footer-contact">
-                            <div class="icon"><i class="fas fa-map-marker-alt"></i></div>
-                            <span>Jl. Basuki Rahmad No. 1, Kecamatan Lamongan,</span>
-                        </div>
-                        
-                        <div class="footer-contact">
-                            <div class="icon"><i class="fas fa-phone"></i></div>
-                            <span>(0322) 311234</span>
-                        </div>
-                        
-                        <div class="footer-contact">
-                            <div class="icon"><i class="fas fa-envelope"></i></div>
-                            <span>diskominfo@lamongankab.go.id</span>
-                        </div>
+                        <p>Jl. Basuki Rahmat No. 10, Lamongan</p>
+                        <p>Jawa Timur 62211</p>
+                        <p>Telp: (0322) 311234</p>
+                        <p>Email: diskominfo@lamongankab.go.id</p>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Layanan</h4>
+                        <ul>
+                            <li><a href="#">Website Resmi</a></li>
+                            <li><a href="#">Portal Data</a></li>
+                            <li><a href="#">Aplikasi Mobile</a></li>
+                            <li><a href="#">Helpdesk</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="footer-section">
+                        <h4>Informasi</h4>
+                        <ul>
+                            <li><a href="#">Tentang Kami</a></li>
+                            <li><a href="#">Kontak</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Kebijakan Privasi</a></li>
+                        </ul>
                     </div>
                 </div>
-
+                
                 <div class="footer-bottom">
-                    <p>&copy; {{ date('Y') }} Dinas Komunikasi dan Informatika Kabupaten Lamongan</p>
-                    <p>Survei Kepuasan Masyarakat - Sistem Informasi Pelayanan Publik</p>
+                    <p>&copy; 2025 Dinas Komunikasi dan Informatika Kabupaten Lamongan. Semua hak dilindungi.</p>
                 </div>
             </div>
-        </div>
+        </footer>
     </div>
-
     @stack('scripts')
 </body>
 </html>

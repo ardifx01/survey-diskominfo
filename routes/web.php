@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SurveyQuestionController;
 use App\Http\Controllers\DynamicSurveyController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\AssetController;
 use Illuminate\Support\Facades\Route;
 
 // Public Survey Routes
@@ -23,6 +24,11 @@ Route::get('/admin/logout', [AdminController::class, 'logout'])->name('admin.log
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 Route::delete('/admin/survey/{id}', [AdminController::class, 'deleteSurvey'])->name('admin.deleteSurvey');
+
+// Admin File Management Routes
+Route::get('/admin/files', [AdminController::class, 'uploadedFiles'])->name('admin.uploadedFiles');
+Route::get('/admin/file/view/{id}', [AdminController::class, 'viewFile'])->name('admin.viewFile');
+Route::get('/admin/file/download/{id}', [AdminController::class, 'downloadFile'])->name('admin.downloadFile');
 
 // Admin Question Management Routes
 Route::prefix('admin/questions')->name('admin.questions.')->group(function () {
@@ -51,8 +57,15 @@ Route::prefix('admin/users')->name('admin.users.')->group(function () {
     Route::delete('/{id}', [UserController::class, 'destroy'])->name('destroy');
 });
 
-// Admin File Management Routes
-Route::get('/admin/survey/{id}/detail', [AdminController::class, 'getSurveyDetail'])->name('admin.surveyDetail');
-Route::get('/admin/response/{id}/download', [AdminController::class, 'downloadFile'])->name('admin.downloadFile');
-Route::get('/admin/response/{id}/view', [AdminController::class, 'viewFile'])->name('admin.viewFile');
-Route::get('/admin/uploaded-files', [AdminController::class, 'getUploadedFiles'])->name('admin.uploadedFiles');
+// Admin Asset Management Routes
+Route::prefix('admin/assets')->name('admin.assets.')->group(function () {
+    Route::get('/', [AssetController::class, 'index'])->name('index');
+    Route::get('/create', [AssetController::class, 'create'])->name('create');
+    Route::post('/', [AssetController::class, 'store'])->name('store');
+    Route::put('/{id}/toggle', [AssetController::class, 'toggle'])->name('toggle');
+    Route::delete('/{id}', [AssetController::class, 'destroy'])->name('destroy');
+});
+
+// Dynamic Survey Routes
+Route::get('/survey/{slug?}', [DynamicSurveyController::class, 'showSurvey'])->name('dynamic.survey');
+Route::post('/survey/submit', [DynamicSurveyController::class, 'submitSurvey'])->name('dynamic.survey.submit');

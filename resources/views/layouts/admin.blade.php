@@ -348,6 +348,10 @@
                     <span class="menu-icon"><i class="fas fa-users"></i></span>
                     Users
                 </a>
+                <a href="{{ route('admin.assets.index') }}" class="menu-item @yield('active-assets')">
+                    <span class="menu-icon"><i class="fas fa-images"></i></span>
+                    Assets
+                </a>
             </div>
 
             <div class="logout-section">
