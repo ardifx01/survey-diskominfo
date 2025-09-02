@@ -358,7 +358,7 @@
                     @endif
                 </div>
 
-                <div class="program-badges">
+                {{-- <div class="program-badges">
                     <div class="badge">SMART CITY</div>
                     <div class="badge">DIGITAL LAMONGAN</div>
                 </div>
@@ -367,14 +367,14 @@
                     <div class="main-text">DINAS KOMUNIKASI</div>
                     <div class="main-text">DAN INFORMATIKA</div>
                     <div class="sub-text">KABUPATEN LAMONGAN</div>
-                </div>
+                </div> --}}
             </div>
 
             <div class="title-section">
                 <h1>SURVEI KEPUASAN MASYARAKAT</h1>
                 <h2>Dinas Komunikasi dan Informatika</h2>
                 <h3>Kabupaten Lamongan</h3>
-                <h4>TAHUN 2025</h4>
+                <h4>TAHUN {{ date('Y') }}</h4>
             </div>
         </div>
 
@@ -388,9 +388,9 @@
                     <div class="footer-section">
                         <h4>Dinas Komunikasi dan Informatika</h4>
                         <p>Kabupaten Lamongan</p>
-                        <p>Jl. Basuki Rahmat No. 10, Lamongan</p>
+                        <p>Jl. Basuki Rahmat No. 1, Lamongan</p>
                         <p>Jawa Timur 62211</p>
-                        <p>Telp: (0322) 311234</p>
+                        <p>WhatsApp : +628113021708</p>
                         <p>Email: diskominfo@lamongankab.go.id</p>
                     </div>
                     
@@ -416,7 +416,7 @@
                 </div>
                 
                 <div class="footer-bottom">
-                    <p>&copy; 2025 Dinas Komunikasi dan Informatika Kabupaten Lamongan. Semua hak dilindungi.</p>
+                    <p>&copy; {{ date('Y') }} Dinas Komunikasi dan Informatika Kabupaten Lamongan. Semua hak dilindungi.</p>
                 </div>
             </div>
         </footer>

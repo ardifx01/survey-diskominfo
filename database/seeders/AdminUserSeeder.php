@@ -25,15 +25,5 @@ class AdminUserSeeder extends Seeder
             'created_at' => now(),
             'updated_at' => now(),
         ]);
-
-        // Tambah admin biasa untuk contoh
-        DB::table('admin_users')->insert([
-            'username' => 'admin',
-            'password' => Hash::make('admin123'),
-            'name' => 'Administrator',
-            'role' => 'admin',
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
     }
 }
