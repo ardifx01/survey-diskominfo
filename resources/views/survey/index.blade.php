@@ -162,6 +162,22 @@
         line-height: 1.4;
     }
 
+    .question-description {
+    font-size: 14px;
+    color: #6c757d;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    padding: 8px 12px;
+    background-color: #f8f9fa;
+    border-left: 3px solid #5a9b9e;
+    border-radius: 4px;
+    line-height: 1.5;
+}
+
+.question-description:empty {
+    display: none;
+}
+
     .required-mark {
         color: #e74c3c;
         margin-left: 4px;
@@ -471,7 +487,11 @@
 
     @media (max-width: 768px) {
         .section-body {
-            padding: 30px 20px;
+            .question-description {
+        font-size: 13px;
+        padding: 6px 10px;
+        margin-bottom: 12px;
+    }
         }
 
         .navigation-buttons {
@@ -555,6 +575,13 @@
                         <span class="required-mark">*</span>
                     @endif
                 </label>
+
+                {{-- Tambahkan bagian untuk menampilkan deskripsi pertanyaan --}}
+                @if($question->question_description)
+                    <div class="question-description">
+                        {{ $question->question_description }}
+                    </div>
+                @endif
 
                 @if($question->question_type === 'short_text')
                     <input 

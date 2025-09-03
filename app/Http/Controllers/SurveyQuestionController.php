@@ -88,6 +88,7 @@ class SurveyQuestionController extends Controller
 
         $request->validate([
             'question_text' => 'required|string',
+            'question_description' => 'nullable|string|max:1000', // Field baru untuk deskripsi
             'question_type' => 'required|in:short_text,long_text,multiple_choice,checkbox,dropdown,file_upload,linear_scale',
             'is_required' => 'boolean',
             'options' => 'nullable|array',
@@ -120,6 +121,7 @@ class SurveyQuestionController extends Controller
         SurveyQuestion::create([
             'section_id' => $sectionId,
             'question_text' => $request->question_text,
+            'question_description' => $request->question_description, // Tambahkan field ini
             'question_type' => $request->question_type,
             'options' => $options,
             'settings' => $settings,
@@ -152,6 +154,7 @@ class SurveyQuestionController extends Controller
 
         $request->validate([
             'question_text' => 'required|string',
+            'question_description' => 'nullable|string|max:1000', // Field baru untuk deskripsi
             'question_type' => 'required|in:short_text,long_text,multiple_choice,checkbox,dropdown,file_upload,linear_scale',
             'is_required' => 'boolean',
             'options' => 'nullable|array',
@@ -181,6 +184,7 @@ class SurveyQuestionController extends Controller
 
         $question->update([
             'question_text' => $request->question_text,
+            'question_description' => $request->question_description, // Tambahkan field ini
             'question_type' => $request->question_type,
             'options' => $options,
             'settings' => $settings,

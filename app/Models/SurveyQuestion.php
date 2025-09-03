@@ -12,6 +12,7 @@ class SurveyQuestion extends Model
     protected $fillable = [
         'section_id',
         'question_text',
+        'question_description', // Field baru untuk deskripsi pertanyaan
         'question_type',
         'options',
         'settings',

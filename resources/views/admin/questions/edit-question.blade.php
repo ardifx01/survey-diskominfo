@@ -4,7 +4,7 @@
 @section('title', 'Edit Pertanyaan - Admin Survei')
 @section('active-questions', 'active')
 @section('page-title', 'Edit Pertanyaan')
-@section('page-subtitle', 'Ubah pertanyaan di bagian: {{ $question->section->title }}')
+@section('page-subtitle', 'Perbarui pertanyaan: {{ $question->section->title }}')
 
 @section('breadcrumb')
 <div class="breadcrumb">
@@ -19,7 +19,7 @@
 @push('styles')
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <style>
-    /* Form Styles - Similar to create-question but with edit theme */
+    /* Form Styles */
     .form-container {
         background: white;
         border-radius: 12px;
@@ -29,7 +29,7 @@
     }
 
     .form-header {
-        background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+        background: linear-gradient(135deg, #5a9b9e 0%, #4a8b8e 100%);
         color: white;
         padding: 25px 30px;
         border-radius: 12px 12px 0 0;
@@ -75,105 +75,132 @@
 
     .form-input:focus {
         outline: none;
-        border-color: #f39c12;
-        box-shadow: 0 0 0 3px rgba(243, 156, 18, 0.1);
+        border-color: #5a9b9e;
+        box-shadow: 0 0 0 3px rgba(90, 155, 158, 0.1);
     }
 
     .form-textarea {
-        min-height: 120px;
+        min-height: 100px;
         resize: vertical;
     }
 
+    .form-help {
+        font-size: 14px;
+        color: #7f8c8d;
+        margin-top: 5px;
+    }
+
+    /* Question Type Cards */
     .question-type-cards {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
         gap: 15px;
-        margin-top: 10px;
+        margin-top: 15px;
     }
 
     .type-card {
         border: 2px solid #e9ecef;
-        border-radius: 8px;
-        padding: 15px;
+        border-radius: 10px;
+        padding: 20px;
         cursor: pointer;
         transition: all 0.3s ease;
-        background: white;
+        position: relative;
     }
 
     .type-card:hover {
-        border-color: #f39c12;
-        background: #fef9e7;
+        border-color: #5a9b9e;
+        background: rgba(90, 155, 158, 0.05);
     }
 
     .type-card.selected {
-        border-color: #f39c12;
-        background: #fef9e7;
+        border-color: #5a9b9e;
+        background: rgba(90, 155, 158, 0.1);
     }
 
     .type-card input[type="radio"] {
-        display: none;
+        position: absolute;
+        opacity: 0;
+        pointer-events: none;
     }
 
     .type-title {
         font-weight: 600;
         color: #2c3e50;
-        margin-bottom: 5px;
+        margin-bottom: 8px;
+        font-size: 16px;
     }
 
     .type-description {
-        font-size: 14px;
         color: #7f8c8d;
+        font-size: 14px;
+        line-height: 1.4;
     }
 
+    /* Options Container */
     .options-container, .scale-container {
-        display: none;
-        margin-top: 15px;
-        padding: 20px;
         background: #f8f9fa;
+        border: 2px solid #e9ecef;
         border-radius: 8px;
-        border: 1px solid #e9ecef;
+        padding: 20px;
+        margin-top: 15px;
+        opacity: 0;
+        max-height: 0;
+        overflow: hidden;
+        transition: all 0.3s ease;
     }
 
     .options-container.show, .scale-container.show {
-        display: block;
+        opacity: 1;
+        max-height: 500px;
     }
 
     .option-item {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-bottom: 10px;
+        margin-bottom: 12px;
     }
 
     .option-input {
         flex: 1;
-        padding: 10px 15px;
-        border: 1px solid #dee2e6;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
         border-radius: 6px;
         font-size: 14px;
     }
 
-    .btn-remove-option {
+    .remove-option {
         background: #dc3545;
         color: white;
         border: none;
-        padding: 8px 12px;
         border-radius: 6px;
+        padding: 8px 12px;
         cursor: pointer;
         font-size: 12px;
+        transition: background 0.3s ease;
     }
 
-    .btn-add-option {
+    .remove-option:hover {
+        background: #c82333;
+    }
+
+    .add-option {
         background: #28a745;
         color: white;
         border: none;
-        padding: 10px 15px;
         border-radius: 6px;
+        padding: 10px 15px;
         cursor: pointer;
         font-size: 14px;
         margin-top: 10px;
+        transition: background 0.3s ease;
     }
 
+    .add-option:hover {
+        background: #218838;
+    }
+
+    /* Scale Settings */
     .scale-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -181,24 +208,27 @@
         margin-bottom: 15px;
     }
 
+    /* Checkbox */
     .checkbox-group {
         display: flex;
         align-items: center;
         gap: 10px;
-        margin-top: 10px;
     }
 
     .checkbox-input {
-        width: auto;
-        margin: 0;
+        width: 18px;
+        height: 18px;
+        accent-color: #5a9b9e;
     }
 
     .checkbox-label {
+        color: #2c3e50;
+        font-weight: 500;
         margin: 0;
-        font-weight: normal;
         cursor: pointer;
     }
 
+    /* Form Actions */
     .form-actions {
         display: flex;
         gap: 15px;
@@ -209,28 +239,28 @@
     }
 
     .btn {
-        padding: 12px 24px;
-        border-radius: 8px;
-        text-decoration: none;
-        font-weight: 500;
-        transition: all 0.3s ease;
+        padding: 12px 25px;
         border: none;
-        cursor: pointer;
-        font-size: 16px;
+        border-radius: 8px;
+        font-weight: 600;
+        text-decoration: none;
         display: inline-flex;
         align-items: center;
         gap: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 16px;
     }
 
     .btn-primary {
-        background: #f39c12;
+        background: #5a9b9e;
         color: white;
     }
 
     .btn-primary:hover {
-        background: #e67e22;
+        background: #4a8b8e;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(243, 156, 18, 0.3);
+        box-shadow: 0 4px 12px rgba(90, 155, 158, 0.3);
     }
 
     .btn-secondary {
@@ -242,12 +272,6 @@
         background: #5a6268;
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(108, 117, 125, 0.3);
-    }
-
-    .form-help {
-        font-size: 14px;
-        color: #7f8c8d;
-        margin-top: 5px;
     }
 
     @media (max-width: 768px) {
@@ -299,6 +323,18 @@
         </div>
 
         <div class="form-group">
+            <label class="form-label" for="question_description">Deskripsi Pertanyaan (Opsional)</label>
+            <textarea 
+                id="question_description" 
+                name="question_description" 
+                class="form-input form-textarea" 
+                placeholder="Contoh: Penulisan nama menggunakan huruf kapital dan gelar menyesuaikan, Contoh : INTANIA SARAH, S.Kom."
+                style="min-height: 80px;"
+            >{{ old('question_description', $question->question_description) }}</textarea>
+            <div class="form-help">Deskripsi akan ditampilkan di bawah pertanyaan untuk memberikan panduan kepada responden</div>
+        </div>
+
+        <div class="form-group">
             <label class="form-label">Jenis Pertanyaan *</label>
             <div class="question-type-cards">
                 <div class="type-card {{ old('question_type', $question->question_type) == 'short_text' ? 'selected' : '' }}" onclick="selectType('short_text')">
@@ -339,48 +375,57 @@
 
                 <div class="type-card {{ old('question_type', $question->question_type) == 'linear_scale' ? 'selected' : '' }}" onclick="selectType('linear_scale')">
                     <input type="radio" name="question_type" value="linear_scale" id="type_linear_scale" {{ old('question_type', $question->question_type) == 'linear_scale' ? 'checked' : '' }}>
-                    <div class="type-title"><i class="fas fa-chart-bar"></i> Skala Linier</div>
-                    <div class="type-description">Memberi nilai dengan angka (1-5, 1-10, dll)</div>
+                    <div class="type-title"><i class="fas fa-sliders-h"></i> Skala Linier</div>
+                    <div class="type-description">Rating dengan skala angka</div>
                 </div>
             </div>
         </div>
 
-        <!-- Options Container -->
-        <div id="optionsContainer" class="options-container">
-            <h4 style="margin-bottom: 15px;"><i class="fas fa-cog"></i> Opsi Jawaban</h4>
+        <!-- Options Container untuk Multiple Choice, Checkbox, Dropdown -->
+        <div class="options-container {{ in_array(old('question_type', $question->question_type), ['multiple_choice', 'checkbox', 'dropdown']) ? 'show' : '' }}" id="optionsContainer">
+            <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-list"></i> Opsi Pilihan</h4>
             <div id="optionsList">
-                @if(old('options') || $question->options)
-                    @foreach(old('options', $question->options ?? []) as $index => $option)
-                        <div class="option-item">
-                            <input type="text" name="options[]" class="option-input" placeholder="Opsi {{ $index + 1 }}" value="{{ $option }}">
-                            <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
-                        </div>
+                @if(old('options'))
+                    @foreach(old('options') as $index => $option)
+                    <div class="option-item">
+                        <input type="text" name="options[]" class="option-input" placeholder="Opsi {{ $index + 1 }}" value="{{ $option }}">
+                        <button type="button" class="remove-option" onclick="removeOption(this)">Hapus</button>
+                    </div>
+                    @endforeach
+                @elseif($question->options)
+                    @foreach($question->options as $index => $option)
+                    <div class="option-item">
+                        <input type="text" name="options[]" class="option-input" placeholder="Opsi {{ $index + 1 }}" value="{{ $option }}">
+                        <button type="button" class="remove-option" onclick="removeOption(this)">Hapus</button>
+                    </div>
                     @endforeach
                 @else
                     <div class="option-item">
                         <input type="text" name="options[]" class="option-input" placeholder="Opsi 1">
-                        <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                        <button type="button" class="remove-option" onclick="removeOption(this)" style="display: none;">Hapus</button>
                     </div>
                     <div class="option-item">
                         <input type="text" name="options[]" class="option-input" placeholder="Opsi 2">
-                        <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+                        <button type="button" class="remove-option" onclick="removeOption(this)" style="display: none;">Hapus</button>
                     </div>
                 @endif
             </div>
-            <button type="button" class="btn-add-option" onclick="addOption()"><i class="fas fa-plus"></i> Tambah Opsi</button>
+            <button type="button" class="add-option" onclick="addOption()">
+                <i class="fas fa-plus"></i> Tambah Opsi
+            </button>
         </div>
 
-        <!-- Scale Settings -->
-        <div id="scaleContainer" class="scale-container">
-            <h4 style="margin-bottom: 15px;"><i class="fas fa-chart-bar"></i> Pengaturan Skala</h4>
+        <!-- Scale Container untuk Linear Scale -->
+        <div class="scale-container {{ old('question_type', $question->question_type) == 'linear_scale' ? 'show' : '' }}" id="scaleContainer">
+            <h4 style="margin-bottom: 15px; color: #2c3e50;"><i class="fas fa-sliders-h"></i> Pengaturan Skala</h4>
             <div class="scale-row">
                 <div>
-                    <label class="form-label" for="scale_min">Nilai Minimum</label>
-                    <input type="number" id="scale_min" name="scale_min" class="form-input" value="{{ old('scale_min', $question->settings['scale_min'] ?? 1) }}" min="1" max="10">
+                    <label class="form-label" for="scale_min">Nilai Minimum *</label>
+                    <input type="number" id="scale_min" name="scale_min" class="form-input" min="1" max="10" value="{{ old('scale_min', $question->settings['scale_min'] ?? 1) }}">
                 </div>
                 <div>
-                    <label class="form-label" for="scale_max">Nilai Maksimum</label>
-                    <input type="number" id="scale_max" name="scale_max" class="form-input" value="{{ old('scale_max', $question->settings['scale_max'] ?? 5) }}" min="1" max="10">
+                    <label class="form-label" for="scale_max">Nilai Maksimum *</label>
+                    <input type="number" id="scale_max" name="scale_max" class="form-input" min="1" max="10" value="{{ old('scale_max', $question->settings['scale_max'] ?? 5) }}">
                 </div>
             </div>
             <div class="scale-row">
@@ -417,15 +462,19 @@
 
 @push('scripts')
 <script>
-    // Script sama seperti create-question-form
     function selectType(type) {
+        // Remove selected class from all cards
         document.querySelectorAll('.type-card').forEach(card => {
             card.classList.remove('selected');
         });
 
+        // Add selected class to clicked card
         event.currentTarget.classList.add('selected');
+        
+        // Check the radio button
         document.getElementById('type_' + type).checked = true;
 
+        // Show/hide options container
         const optionsContainer = document.getElementById('optionsContainer');
         const scaleContainer = document.getElementById('scaleContainer');
 
@@ -447,64 +496,73 @@
         optionItem.className = 'option-item';
         optionItem.innerHTML = `
             <input type="text" name="options[]" class="option-input" placeholder="Opsi ${optionCount}">
-            <button type="button" class="btn-remove-option" onclick="removeOption(this)"><i class="fas fa-times"></i></button>
+            <button type="button" class="remove-option" onclick="removeOption(this)">Hapus</button>
         `;
         
         optionsList.appendChild(optionItem);
+        updateRemoveButtons();
     }
 
     function removeOption(button) {
-        const optionItem = button.parentElement;
-        const optionsList = document.getElementById('optionsList');
-        
-        if (optionsList.children.length > 2) {
-            optionItem.remove();
-            
-            const options = optionsList.querySelectorAll('.option-input');
-            options.forEach((input, index) => {
-                input.placeholder = `Opsi ${index + 1}`;
-            });
-        } else {
-            alert('Minimal harus ada 2 opsi');
-        }
+        button.parentElement.remove();
+        updateRemoveButtons();
+        updateOptionPlaceholders();
     }
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const checkedType = document.querySelector('input[name="question_type"]:checked');
-        if (checkedType) {
-            selectType(checkedType.value);
-        }
+    function updateRemoveButtons() {
+        const options = document.querySelectorAll('.option-item');
+        const removeButtons = document.querySelectorAll('.remove-option');
+        
+        removeButtons.forEach((btn, index) => {
+            btn.style.display = options.length > 2 ? 'block' : 'none';
+        });
+    }
 
+    function updateOptionPlaceholders() {
+        const inputs = document.querySelectorAll('.option-input');
+        inputs.forEach((input, index) => {
+            input.placeholder = `Opsi ${index + 1}`;
+        });
+    }
+
+    // Initialize form state
+    document.addEventListener('DOMContentLoaded', function() {
+        updateRemoveButtons();
+        
+        // Auto focus pada textarea pertama
         document.getElementById('question_text').focus();
     });
 
+    // Form validation
     document.getElementById('questionForm').addEventListener('submit', function(e) {
-        const questionType = document.querySelector('input[name="question_type"]:checked');
+        const selectedType = document.querySelector('input[name="question_type"]:checked');
         
-        if (!questionType) {
+        if (!selectedType) {
             e.preventDefault();
-            alert('Silakan pilih jenis pertanyaan');
+            alert('Silakan pilih jenis pertanyaan.');
             return;
         }
 
-        if (['multiple_choice', 'checkbox', 'dropdown'].includes(questionType.value)) {
-            const options = document.querySelectorAll('input[name="options[]"]');
-            const filledOptions = Array.from(options).filter(input => input.value.trim() !== '');
+        // Validate options for multiple choice, checkbox, dropdown
+        if (['multiple_choice', 'checkbox', 'dropdown'].includes(selectedType.value)) {
+            const options = document.querySelectorAll('.option-input');
+            const filledOptions = Array.from(options).filter(input => input.value.trim());
             
             if (filledOptions.length < 2) {
                 e.preventDefault();
-                alert('Minimal harus ada 2 opsi yang diisi');
+                alert('Pertanyaan pilihan harus memiliki minimal 2 opsi.');
                 return;
             }
         }
 
-        if (questionType.value === 'linear_scale') {
+        // Validate scale for linear_scale
+        if (selectedType.value === 'linear_scale') {
             const scaleMin = parseInt(document.getElementById('scale_min').value);
             const scaleMax = parseInt(document.getElementById('scale_max').value);
             
             if (scaleMin >= scaleMax) {
                 e.preventDefault();
-                alert('Nilai maksimum harus lebih besar dari nilai minimum');
+                alert('Nilai maksimum harus lebih besar dari nilai minimum.');
                 return;
             }
         }
