@@ -352,6 +352,10 @@
                     <span class="menu-icon"><i class="fas fa-images"></i></span>
                     Assets
                 </a>
+                <a href="{{ route('admin.footer-links.index') }}" class="menu-item @yield('active-footer-links')">
+                <i class="fas fa-link"></i>
+                <span>Footer Links</span>
+                </a>
             </div>
 
             <div class="logout-section">

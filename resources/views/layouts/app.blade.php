@@ -382,6 +382,12 @@
             @yield('content')
         </div>
 
+        @php
+    // Ambil footer links yang aktif
+    $layananLinks = \App\Models\FooterLink::active()->layanan()->ordered()->get();
+    $informasiLinks = \App\Models\FooterLink::active()->informasi()->ordered()->get();
+    @endphp
+
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-grid">
@@ -395,24 +401,39 @@
                     </div>
                     
                     <div class="footer-section">
-                        <h4>Layanan</h4>
+                    <h4>Layanan</h4>
+                    @if($layananLinks->count() > 0)
+                        <ul>
+                            @foreach($layananLinks as $link)
+                                <li><a href="{{ $link->url }}" target="_blank">{{ $link->title }}</a></li>
+                            @endforeach
+                        </ul>
+                    @else
                         <ul>
                             <li><a href="#">Website Resmi</a></li>
                             <li><a href="#">Portal Data</a></li>
                             <li><a href="#">Aplikasi Mobile</a></li>
                             <li><a href="#">Helpdesk</a></li>
                         </ul>
-                    </div>
+                    @endif
+                </div>
                     
-                    <div class="footer-section">
-                        <h4>Informasi</h4>
+                <div class="footer-section">
+                    <h4>Informasi</h4>
+                    @if($informasiLinks->count() > 0)
+                        <ul>
+                            @foreach($informasiLinks as $link)
+                                <li><a href="{{ $link->url }}" target="_blank">{{ $link->title }}</a></li>
+                            @endforeach
+                        </ul>
+                    @else
                         <ul>
                             <li><a href="#">Tentang Kami</a></li>
                             <li><a href="#">Kontak</a></li>
                             <li><a href="#">FAQ</a></li>
                             <li><a href="#">Kebijakan Privasi</a></li>
                         </ul>
-                    </div>
+                    @endif
                 </div>
                 
                 <div class="footer-bottom">

@@ -69,3 +69,15 @@ Route::prefix('admin/assets')->name('admin.assets.')->group(function () {
 // Dynamic Survey Routes
 Route::get('/survey/{slug?}', [DynamicSurveyController::class, 'showSurvey'])->name('dynamic.survey');
 Route::post('/survey/submit', [DynamicSurveyController::class, 'submitSurvey'])->name('dynamic.survey.submit');
+
+// Admin Footer Links Management Routes
+Route::prefix('admin/footer-links')->name('admin.footer-links.')->group(function () {
+    Route::get('/', [FooterLinkController::class, 'index'])->name('index');
+    Route::get('/create', [FooterLinkController::class, 'create'])->name('create');
+    Route::post('/', [FooterLinkController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [FooterLinkController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [FooterLinkController::class, 'update'])->name('update');
+    Route::put('/{id}/toggle', [FooterLinkController::class, 'toggle'])->name('toggle');
+    Route::delete('/{id}', [FooterLinkController::class, 'destroy'])->name('destroy');
+    Route::post('/reorder', [FooterLinkController::class, 'updateOrder'])->name('reorder');
+});
