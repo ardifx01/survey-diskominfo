@@ -409,12 +409,12 @@
                             @endforeach
                         </ul>
                     @else
-                        <ul>
+                        {{-- <ul>
                             <li><a href="#">Website Resmi</a></li>
                             <li><a href="#">Portal Data</a></li>
                             <li><a href="#">Aplikasi Mobile</a></li>
                             <li><a href="#">Helpdesk</a></li>
-                        </ul>
+                        </ul> --}}
                     @endif
                 </div>
                     
@@ -427,12 +427,12 @@
                             @endforeach
                         </ul>
                     @else
-                        <ul>
+                        {{-- <ul>
                             <li><a href="#">Tentang Kami</a></li>
                             <li><a href="#">Kontak</a></li>
                             <li><a href="#">FAQ</a></li>
                             <li><a href="#">Kebijakan Privasi</a></li>
-                        </ul>
+                        </ul> --}}
                     @endif
                 </div>
                 

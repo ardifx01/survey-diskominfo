@@ -7,6 +7,8 @@ use App\Http\Controllers\SurveyQuestionController;
 use App\Http\Controllers\DynamicSurveyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssetController;
+use App\Http\Controllers\FooterLinkController;
+
 use Illuminate\Support\Facades\Route;
 
 // Public Survey Routes
