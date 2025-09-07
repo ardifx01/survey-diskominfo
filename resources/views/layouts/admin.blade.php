@@ -352,6 +352,12 @@
                     <span class="menu-icon"><i class="fas fa-images"></i></span>
                     Assets
                 </a>
+
+                <a href="{{ route('admin.contact-info.edit') }}" class="menu-item @yield('active-contact-info')">
+                <i class="fas fa-address-book"></i>
+                <span>Informasi Kontak</span>
+                </a>
+                
                 <a href="{{ route('admin.footer-links.index') }}" class="menu-item @yield('active-footer-links')">
                 <i class="fas fa-link"></i>
                 <span>Footer Links</span>

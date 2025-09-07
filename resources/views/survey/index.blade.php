@@ -169,7 +169,6 @@
     margin-bottom: 15px;
     padding: 8px 12px;
     background-color: #f8f9fa;
-    border-left: 3px solid #5a9b9e;
     border-radius: 4px;
     line-height: 1.5;
 }

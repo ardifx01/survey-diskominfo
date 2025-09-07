@@ -8,6 +8,7 @@ use App\Http\Controllers\DynamicSurveyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AssetController;
 use App\Http\Controllers\FooterLinkController;
+use App\Http\Controllers\ContactInfoController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -82,4 +83,10 @@ Route::prefix('admin/footer-links')->name('admin.footer-links.')->group(function
     Route::put('/{id}/toggle', [FooterLinkController::class, 'toggle'])->name('toggle');
     Route::delete('/{id}', [FooterLinkController::class, 'destroy'])->name('destroy');
     Route::post('/reorder', [FooterLinkController::class, 'updateOrder'])->name('reorder');
+});
+
+// Admin Contact Info Management Routes
+Route::prefix('admin/contact-info')->name('admin.contact-info.')->group(function () {
+    Route::get('/edit', [ContactInfoController::class, 'edit'])->name('edit');
+    Route::put('/update', [ContactInfoController::class, 'update'])->name('update');
 });

@@ -386,18 +386,20 @@
     // Ambil footer links yang aktif
     $layananLinks = \App\Models\FooterLink::active()->layanan()->ordered()->get();
     $informasiLinks = \App\Models\FooterLink::active()->informasi()->ordered()->get();
+    // Ambil informasi kontak yang dinamis
+    $contactInfo = \App\Models\ContactInfo::getCurrent();
     @endphp
 
         <footer class="footer">
             <div class="footer-content">
                 <div class="footer-grid">
                     <div class="footer-section">
-                        <h4>Dinas Komunikasi dan Informatika</h4>
-                        <p>Kabupaten Lamongan</p>
-                        <p>Jl. Basuki Rahmat No. 1, Lamongan</p>
-                        <p>Jawa Timur 62211</p>
-                        <p>WhatsApp : +628113021708</p>
-                        <p>Email: diskominfo@lamongankab.go.id</p>
+                        <h4>{{ $contactInfo->department_name }}</h4>
+                        <p>{{ $contactInfo->regency_name }}</p>
+                        <p>{{ $contactInfo->address }}</p>
+                        <p>{{ $contactInfo->province }}</p>
+                        <p>WhatsApp : {{ $contactInfo->whatsapp }}</p>
+                        <p>Email: {{ $contactInfo->email }}</p>
                     </div>
                     
                     <div class="footer-section">
