@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             AdminUserSeeder::class,
             ContactInfoSeeder::class,
             FooterLinkSeeder::class,
+            AssetSeeder::class, 
             SurveySectionSeeder::class,
             SurveyQuestionSeeder::class,
         ]);
