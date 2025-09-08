@@ -28,6 +28,9 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('adm
 Route::get('/admin/export', [AdminController::class, 'export'])->name('admin.export');
 Route::delete('/admin/survey/{id}', [AdminController::class, 'deleteSurvey'])->name('admin.deleteSurvey');
 
+// TAMBAHAN: Route untuk detail survei individual - PERBAIKAN ERROR
+Route::get('/admin/survey/{id}/detail', [AdminController::class, 'getSurveyDetail'])->name('admin.survey.detail');
+
 // Admin File Management Routes
 Route::get('/admin/files', [AdminController::class, 'uploadedFiles'])->name('admin.uploadedFiles');
 Route::get('/admin/file/view/{id}', [AdminController::class, 'viewFile'])->name('admin.viewFile');

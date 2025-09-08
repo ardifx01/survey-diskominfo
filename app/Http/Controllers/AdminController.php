@@ -440,8 +440,16 @@ private function getSectionData($totalSurveys, $questions)
         ->orderBy('created_at', 'desc')
         ->get();
     
-    // Ambil pertanyaan yang aktif dan diurutkan berdasarkan order
-    $questions = SurveyQuestion::active()->ordered()->get();
+    // PERBAIKAN: Ambil pertanyaan yang aktif dan diurutkan berdasarkan bagian terlebih dahulu, 
+    // kemudian berdasarkan urutan dalam bagian
+    $questions = SurveyQuestion::with('section')
+        ->join('survey_sections', 'survey_questions.section_id', '=', 'survey_sections.id')
+        ->where('survey_questions.is_active', true)  // Spesifik tabel survey_questions
+        ->where('survey_sections.is_active', true)   // Spesifik tabel survey_sections
+        ->orderBy('survey_sections.order_index', 'asc')  // Urutkan bagian dulu
+        ->orderBy('survey_questions.order_index', 'asc') // Kemudian urutkan pertanyaan dalam bagian
+        ->select('survey_questions.*') // Pilih hanya kolom dari survey_questions
+        ->get();
     
     // Header CSV yang konsisten
     $headers = [
@@ -455,6 +463,15 @@ private function getSectionData($totalSurveys, $questions)
         $questionText = strip_tags($question->question_text);
         $questionText = str_replace(["\r", "\n", "\t"], ' ', $questionText);
         $questionText = trim($questionText);
+        
+        // OPSIONAL: Tambahkan nama bagian di depan pertanyaan untuk kejelasan
+        if ($question->section) {
+            $sectionName = strip_tags($question->section->title);
+            $sectionName = str_replace(["\r", "\n", "\t"], ' ', $sectionName);
+            $sectionName = trim($sectionName);
+            $questionText = "[$sectionName] $questionText";
+        }
+        
         $headers[] = $questionText;
     }
 

@@ -1,5 +1,5 @@
 <?php
-// database/seeders/AdminUserSeeder.php
+
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -13,17 +13,17 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Hapus data lama jika ada
-        DB::table('admin_users')->truncate();
-
-        // Tambah super admin default
         DB::table('admin_users')->insert([
-            'username' => 'superadmin',
-            'password' => Hash::make('superadmin123'),
-            'name' => 'Super Administrator',
-            'role' => 'super_admin',
-            'created_at' => now(),
-            'updated_at' => now(),
+            [
+                'id' => 1,
+                'username' => 'superadmin',
+                'password' => Hash::make('password'), // Ganti dengan password yang Anda inginkan
+                'name' => 'Super Administrator',
+                'role' => 'super_admin',
+                'last_login_at' => null,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]
         ]);
     }
 }

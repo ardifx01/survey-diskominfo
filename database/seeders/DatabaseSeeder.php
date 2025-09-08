@@ -11,16 +11,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        // User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
-        // Jalankan AdminUserSeeder
         $this->call([
             AdminUserSeeder::class,
+            ContactInfoSeeder::class,
+            FooterLinkSeeder::class,
+            SurveySectionSeeder::class,
+            SurveyQuestionSeeder::class,
         ]);
     }
 }
